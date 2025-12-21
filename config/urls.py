@@ -23,5 +23,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path("", include("apps.home.urls")),  # landing page
     path("users/",include("apps.users.urls")),
+    path("adminpanel/",include("apps.adminpanel.urls")),
 
 ]

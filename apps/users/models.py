@@ -1,36 +1,40 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import (
+    AbstractBaseUser,
+    PermissionsMixin,
+)
 from cloudinary.models import CloudinaryField
+from  .managers import UserManager
+from .validators import validate_name
 
-# Create your models here.
 
-
-
-class User(AbstractUser):
-    # remove unused fields from Django default
-    first_name = None
-    last_name = None
-    username = None
-
-    # login using email
+class User(AbstractBaseUser, PermissionsMixin):
+    # authentication
     email = models.EmailField(unique=True)
-    USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = ["full_name"]  # only needed for createsuperuser
 
-    # Basic details
-    full_name = models.CharField(max_length=255)
-    phone_number = models.CharField(max_length=20, unique=True, null=True, blank=True)
+    # basic info
+    full_name = models.CharField(
+        max_length=255,
+        validators=[validate_name],
+    )
 
-    # Profile Image (Cloudinary is better)
+    phone_number = models.CharField(
+        max_length=20,
+        unique=True,
+        null=True,
+        blank=True,
+    )
+
+    # profile image
     profile_image = CloudinaryField(
         "image",
         folder="profile_pics",
+        default="default_v0m4nt",
         null=True,
         blank=True,
-        default="default_v0m4nt",
     )
 
-    # Gender & DOB
+    # gender & dob
     gender = models.CharField(
         max_length=10,
         choices=[
@@ -44,7 +48,7 @@ class User(AbstractUser):
 
     dob = models.DateField(null=True, blank=True)
 
-    # User roles
+    # roles
     role = models.CharField(
         max_length=20,
         choices=[
@@ -54,18 +58,35 @@ class User(AbstractUser):
         default="user",
     )
 
-    # Referral System
-    referral_code = models.CharField(max_length=20, unique=True, blank=True)
+    # referral system
+    referral_code = models.CharField(
+        max_length=20,
+        unique=True,
+        null=True,
+        blank=True,
+    )
+
     referred_by = models.ForeignKey(
         "self",
         null=True,
         blank=True,
-        on_delete=models.SET_NULL
+        on_delete=models.SET_NULL,
+        related_name="referrals",
     )
+
+    # permissions
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
 
     # timestamps
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    # auth config
+    USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = ["full_name"]
+
+    objects = UserManager()
+
     def __str__(self):
-        return self.email
+        return str(self.email)
