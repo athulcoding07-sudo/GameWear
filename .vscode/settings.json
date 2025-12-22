@@ -9,5 +9,8 @@
     "files.associations": {
         "*.html": "django-html"
     },
+    "python.analysis.diagnosticSeverityOverrides": {
+        "reportGeneralTypeIssues": "none"
+    },
     
 }

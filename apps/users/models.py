@@ -6,6 +6,11 @@ from django.contrib.auth.models import (
 from cloudinary.models import CloudinaryField
 from  .managers import UserManager
 from .validators import validate_name
+from django.contrib.auth import get_user_model
+from django.utils import timezone
+from datetime import timedelta
+from django.conf import settings
+
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -90,3 +95,6 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return str(self.email)
+
+
+
