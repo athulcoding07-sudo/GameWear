@@ -24,7 +24,7 @@
     {% endif %}
 
     <!-- Signup Form -->
-    <form method="post" class="space-y-4" novalidate  action = "{% url 'users:verify_signup_otp' %}" >
+    <form method="POST" class="space-y-4" novalidate  action = "{% url 'users:signup' %}" >
         {% csrf_token %}
 
         <!-- NON-FIELD ERRORS (IMPORTANT) -->
