@@ -4,7 +4,7 @@ from django.utils import timezone
 from .models import OTP
 from .utils import send_otp_email
 
-OTP_EXPIRY_MINUTES = 5
+OTP_EXPIRY_MINUTES = 2
 RESEND_COOLDOWN_SECONDS = 60
 MAX_RESENDS = 3
 
@@ -80,5 +80,5 @@ def resend_otp(user, purpose):
         resend_count=otp.resend_count + 1,
     )
 
-    send_otp_email(user.email, new_otp.code)
+    send_otp_email(user, new_otp.code,new_otp.purpose)
     return True, "OTP resent"
