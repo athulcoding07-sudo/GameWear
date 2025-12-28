@@ -48,7 +48,7 @@ ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
 # Application definition
 
 INSTALLED_APPS = [
-
+# google login
     "django.contrib.sites",
 
     "allauth",
@@ -182,25 +182,59 @@ DEFAULT_FROM_EMAIL = "GameWear <athulcoding07@gmail.com>"
 
 
 # ==============================
-# google login
+# Google Login Configuration
 # ==============================
 
-SITE_ID = 1
+SITE_ID = 2
 
 
+# Authentication backends
 AUTHENTICATION_BACKENDS = (
     "django.contrib.auth.backends.ModelBackend",
     "allauth.account.auth_backends.AuthenticationBackend",
 )
 
-LOGIN_REDIRECT_URL = "/"
-LOGOUT_REDIRECT_URL = "/"
 
+# Redirects
+LOGIN_REDIRECT_URL = "users:dashboard"
+LOGOUT_REDIRECT_URL = "users:login"
+
+
+# ==============================
+# django-allauth Account Settings
+# ==============================
+# Disable username completely
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+# Login using email only
+ACCOUNT_LOGIN_METHODS = {"email"}
+
+# Signup fields (new replacement for deprecated settings)
+ACCOUNT_SIGNUP_FIELDS = [
+    "email*",
+    "password1*",
+    "password2*",
+]
+
+# Email behavior
+ACCOUNT_EMAIL_VERIFICATION = "optional"
+ACCOUNT_LOGOUT_ON_GET = True
+
+
+# ==============================
+# Google Provider Settings
+# ==============================
+
+SOCIALACCOUNT_LOGIN_ON_GET = True
 
 SOCIALACCOUNT_PROVIDERS = {
     "google": {
-        "SCOPE": ["profile", "email"],
-        "AUTH_PARAMS": {"access_type": "online"},
+        "SCOPE": [
+            "profile",
+            "email",
+        ],
+        "AUTH_PARAMS": {
+            "access_type": "online",
+        },
     }
 }
 
