@@ -1,199 +1,107 @@
-{% extends "base.html" %}
-{% load static %}
+{% extends "users/user_dashboard_base.html" %}
 
-{% block title %}
-GameWear - user dashboard
-{% endblock %}
+{% block title %}GameWear - Collections {% endblock %}
 
-{% block header %}
-    {% include "home/partials/header.html" %}
-{% endblock %}
+{% block content %}
 
-<main class="min-h-screen flex items-center justify-center">
-        {% block content %}
-        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex-grow w-full">
-        
-        <!-- Breadcrumbs / Independent Search & Sort -->
-        <div class="flex flex-col md:flex-row md:items-center justify-between mb-12 gap-4">
-            <div>
-                <h1 class="text-4xl font-black uppercase tracking-tighter italic">Collections</h1>
-                <p class="text-neutral-500 text-sm mt-1">Home / Shop / All Sneakers</p>
-            </div>
-            
-            <div class="flex items-center gap-3">
-                <!-- Independent Search -->
-                <div class="relative w-64">
-                    <input type="text" placeholder="Search product..." class="w-full bg-neutral-900 border border-neutral-800 rounded-lg py-2 pl-10 pr-4 text-sm focus:outline-none focus:border-neutral-600 transition">
-                    <svg class="w-4 h-4 absolute left-3 top-2.5 text-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                    </svg>
-                </div>
-                <!-- Independent Sort -->
-                <select class="bg-neutral-900 border border-neutral-800 rounded-lg py-2 px-4 text-sm focus:outline-none cursor-pointer">
-                    <option>Default Sorting</option>
-                    <option>Price Low to High</option>
-                    <option>Price High to Low</option>
-                    <option>Newest</option>
-                </select>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <div class="mb-10">
+            <h1 class="text-5xl font-black uppercase tracking-tighter italic text-white leading-none">Collections</h1>
+            <div class="flex items-center gap-2 mt-2 text-neutral-500 text-xs font-bold uppercase tracking-widest">
+                <a href="#" class="hover:text-white transition">Home</a>
+                <span>/</span>
+                <span class="text-neutral-300">All Products</span>
             </div>
         </div>
 
-        <div class="flex flex-col lg:flex-row gap-12">
-            
-            <!-- LEFT SIDEBAR: Unified Filter Form -->
-            <aside class="w-full lg:w-64 flex-shrink-0">
-                <form class="space-y-10 bg-neutral-900/30 p-6 rounded-2xl border border-neutral-900">
-                    
-                    <!-- Categories (Checkboxes) -->
-                    <div>
-                        <h3 class="text-sm font-black uppercase tracking-widest text-white filter-section-title">Categories</h3>
-                        <div class="space-y-3">
-                            <label class="flex items-center justify-between cursor-pointer group">
-                                <span class="text-neutral-400 group-hover:text-white transition text-sm">Basketball</span>
-                                <input type="checkbox" name="category" value="basketball" class="w-4 h-4 rounded-sm bg-black border-neutral-800">
-                            </label>
-                            <label class="flex items-center justify-between cursor-pointer group">
-                                <span class="text-white font-bold text-sm">Lifestyle</span>
-                                <input type="checkbox" name="category" value="lifestyle" checked class="w-4 h-4 rounded-sm bg-black border-neutral-800">
-                            </label>
-                            <label class="flex items-center justify-between cursor-pointer group">
-                                <span class="text-neutral-400 group-hover:text-white transition text-sm">Running</span>
-                                <input type="checkbox" name="category" value="running" class="w-4 h-4 rounded-sm bg-black border-neutral-800">
-                            </label>
-                        </div>
-                    </div>
+        <form>
+            <div class="flex flex-col md:flex-row gap-4 justify-between items-center mb-12 bg-neutral-900/40 p-4 rounded-xl border border-neutral-800">
+                <div class="relative w-full md:w-96">
+                    <input type="text" placeholder="Search products..." class="w-full bg-black border border-neutral-800 rounded-lg py-3 pl-12 pr-4 text-sm text-white focus:outline-none focus:border-neutral-500">
+                    <svg class="w-5 h-5 absolute left-4 top-3 text-neutral-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                </div>
+                <div class="flex items-center gap-3 w-full md:w-auto">
+                    <select class="bg-black border border-neutral-800 rounded-lg py-3 px-6 text-sm text-white focus:outline-none cursor-pointer w-full sm:w-48">
+                        <option>Default Sorting</option>
+                        <option>Price: Low to High</option>
+                        <option>Price: High to Low</option>
+                    </select>
+                </div>
+            </div>
 
-                    <!-- Colors (Custom Radios) -->
-                    <div>
-                        <h3 class="text-sm font-black uppercase tracking-widest text-white filter-section-title">Filter by Color</h3>
-                        <div class="grid grid-cols-5 gap-3">
-                            <label class="cursor-pointer">
-                                <input type="radio" name="color" value="black" class="color-input">
-                                <div class="color-label w-8 h-8 rounded bg-black border border-neutral-700"></div>
-                            </label>
-                            <label class="cursor-pointer">
-                                <input type="radio" name="color" value="white" class="color-input">
-                                <div class="color-label w-8 h-8 rounded bg-white border border-neutral-300"></div>
-                            </label>
-                            <label class="cursor-pointer">
-                                <input type="radio" name="color" value="red" class="color-input">
-                                <div class="color-label w-8 h-8 rounded bg-red-600"></div>
-                            </label>
-                            <label class="cursor-pointer">
-                                <input type="radio" name="color" value="blue" class="color-input">
-                                <div class="color-label w-8 h-8 rounded bg-blue-600"></div>
-                            </label>
-                        </div>
-                    </div>
-
-                    <!-- Sizes (Custom Radios) -->
-                    <div>
-                        <h3 class="text-sm font-black uppercase tracking-widest text-white filter-section-title">Filter by Size</h3>
-                        <div class="flex flex-wrap gap-2">
-                            <label class="cursor-pointer">
-                                <input type="radio" name="size" value="40" class="filter-input">
-                                <div class="filter-label px-3 py-1.5 border border-neutral-800 rounded text-xs font-bold hover:border-neutral-500 transition uppercase">40</div>
-                            </label>
-                            <label class="cursor-pointer">
-                                <input type="radio" name="size" value="41" class="filter-input">
-                                <div class="filter-label px-3 py-1.5 border border-neutral-800 rounded text-xs font-bold hover:border-neutral-500 transition uppercase">41</div>
-                            </label>
-                            <label class="cursor-pointer">
-                                <input type="radio" name="size" value="42" class="filter-input" checked>
-                                <div class="filter-label px-3 py-1.5 border border-neutral-800 rounded text-xs font-bold hover:border-neutral-500 transition uppercase">42</div>
-                            </label>
-                        </div>
-                    </div>
-
-                    <!-- Price Range -->
-                    <div>
-                        <h3 class="text-sm font-black uppercase tracking-widest text-white filter-section-title">Price Range</h3>
-                        <div class="space-y-4 px-1">
-                            <input type="range" min="0" max="500" value="250" class="w-full h-1 bg-neutral-800 rounded-lg appearance-none cursor-pointer accent-white">
-                            <div class="flex justify-between text-xs text-neutral-500 font-bold">
-                                <span>$0</span>
-                                <span>$500</span>
+            <div class="flex flex-col lg:flex-row gap-12">
+                <aside class="w-full lg:w-64 flex-shrink-0">
+                    <div class="space-y-10">
+                        <!-- Categories -->
+                        <div>
+                            <h3 class="text-xs font-black uppercase tracking-[0.2em] text-white mb-6 flex items-center gap-2"><span class="w-2 h-2 bg-neutral-500"></span> Categories</h3>
+                            <div class="space-y-3">
+                                <label class="flex items-center justify-between cursor-pointer group"><span class="text-sm text-neutral-400 group-hover:text-white transition">Basketball</span><input type="checkbox" class="w-4 h-4 rounded-sm bg-black border-neutral-800"></label>
+                                <label class="flex items-center justify-between cursor-pointer group"><span class="text-sm text-neutral-400 group-hover:text-white transition">Running</span><input type="checkbox" class="w-4 h-4 rounded-sm bg-black border-neutral-800" checked></label>
+                                <label class="flex items-center justify-between cursor-pointer group"><span class="text-sm text-neutral-400 group-hover:text-white transition">Lifestyle</span><input type="checkbox" class="w-4 h-4 rounded-sm bg-black border-neutral-800"></label>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Apply Button -->
-                    <button type="submit" class="w-full bg-white text-black py-3 rounded-lg font-black uppercase text-xs tracking-widest hover:bg-neutral-200 transition-all shadow-[0_0_20px_rgba(255,255,255,0.1)]">
-                        Apply Filters
-                    </button>
-                    
-                    <button type="reset" class="w-full text-neutral-500 py-1 text-[10px] uppercase font-bold hover:text-white transition">
-                        Clear All
-                    </button>
-
-                </form>
-            </aside>
-
-            <!-- RIGHT CONTENT: Product Listing -->
-            <section class="flex-grow">
-                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-6 gap-y-10">
-                    
-                    <!-- Product Card 1 -->
-                    <div class="product-card group cursor-pointer">
-                        <div class="relative bg-neutral-900 rounded-2xl p-6 mb-4 overflow-hidden border border-neutral-800 group-hover:border-neutral-700 transition">
-                            <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&q=80&w=800" class="w-full h-48 object-contain">
-                            <div class="absolute top-4 left-4 bg-red-600 text-white text-[10px] font-black px-2 py-1 rounded uppercase">Sale</div>
-                        </div>
-                        <div class="space-y-1">
-                            <p class="text-[10px] font-black uppercase text-neutral-500 tracking-widest">Nike / Running</p>
-                            <h3 class="font-bold text-lg">Nike Air Max 270</h3>
-                            <div class="flex items-center gap-3">
-                                <span class="text-white font-black">$120.00</span>
-                                <span class="text-neutral-600 line-through text-sm">$150.00</span>
+                        <!-- Color Filter -->
+                        <div>
+                            <h3 class="text-xs font-black uppercase tracking-[0.2em] text-white mb-6 flex items-center gap-2"><span class="w-2 h-2 bg-neutral-500"></span> Colors</h3>
+                            <div class="flex flex-wrap gap-3">
+                                <label class="cursor-pointer">
+                                    <input type="checkbox" class="sr-only peer">
+                                    <div class="w-8 h-8 rounded-full bg-white border border-neutral-800 peer-checked:ring-2 peer-checked:ring-neutral-500 peer-checked:ring-offset-2 peer-checked:ring-offset-black transition-all"></div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="checkbox" class="sr-only peer" checked>
+                                    <div class="w-8 h-8 rounded-full bg-black border border-neutral-300 peer-checked:ring-2 peer-checked:ring-neutral-500 peer-checked:ring-offset-2 peer-checked:ring-offset-black transition-all"></div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="checkbox" class="sr-only peer">
+                                    <div class="w-8 h-8 rounded-full bg-red-600 border border-neutral-800 peer-checked:ring-2 peer-checked:ring-neutral-500 peer-checked:ring-offset-2 peer-checked:ring-offset-black transition-all"></div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="checkbox" class="sr-only peer">
+                                    <div class="w-8 h-8 rounded-full bg-blue-600 border border-neutral-800 peer-checked:ring-2 peer-checked:ring-neutral-500 peer-checked:ring-offset-2 peer-checked:ring-offset-black transition-all"></div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="checkbox" class="sr-only peer">
+                                    <div class="w-8 h-8 rounded-full bg-yellow-500 border border-neutral-800 peer-checked:ring-2 peer-checked:ring-neutral-500 peer-checked:ring-offset-2 peer-checked:ring-offset-black transition-all"></div>
+                                </label>
                             </div>
                         </div>
+
+                        <!-- Max Price -->
+                        <div>
+                            <h3 class="text-xs font-black uppercase tracking-[0.2em] text-white mb-6 flex items-center gap-2"><span class="w-2 h-2 bg-neutral-500"></span> Max Price</h3>
+                            <input type="range" min="0" max="1000" value="500" class="w-full h-1 bg-neutral-800 rounded-lg appearance-none cursor-pointer">
+                            <div class="text-center mt-3 text-lg font-black italic text-white tracking-tighter">$500</div>
+                        </div>
+
+                        <button type="button" class="w-full bg-white text-black font-black uppercase text-xs py-4 rounded-lg hover:bg-neutral-200 transition tracking-widest">Apply Filters</button>
                     </div>
+                </aside>
 
-                    <!-- Product Card 2 -->
-                    <div class="product-card group cursor-pointer">
-                        <div class="relative bg-neutral-900 rounded-2xl p-6 mb-4 overflow-hidden border border-neutral-800 group-hover:border-neutral-700 transition">
-                            <img src="https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?auto=format&fit=crop&q=80&w=800" class="w-full h-48 object-contain">
-                            <div class="absolute top-4 left-4 bg-white text-black text-[10px] font-black px-2 py-1 rounded uppercase">New</div>
+                <section class="flex-grow">
+                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-6 gap-y-12">
+                        <!-- Product Card -->
+                        <div class="group cursor-pointer">
+                            <div class="relative aspect-square bg-neutral-900 rounded-2xl overflow-hidden border border-neutral-800 group-hover:border-neutral-600 transition-all duration-500 p-8">
+                                <img src="https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-contain group-hover:scale-110 transition duration-700">
+                                <div class="absolute top-4 left-4 bg-white text-black text-[10px] font-black px-3 py-1 rounded-full uppercase">New</div>
+                            </div>
+                            <div class="mt-6 flex justify-between items-start">
+                                <div><p class="text-[10px] font-bold uppercase text-neutral-500 tracking-widest">Nike / Running</p><h3 class="text-lg font-bold text-white">Air Zoom Pegasus</h3></div>
+                                <p class="text-xl font-black italic text-white">$120.00</p>
+                            </div>
                         </div>
-                        <div class="space-y-1">
-                            <p class="text-[10px] font-black uppercase text-neutral-600 tracking-widest">Nike / Training</p>
-                            <h3 class="font-bold text-lg">Nike Zoom Rival</h3>
-                            <span class="text-white font-black">$85.00</span>
-                        </div>
+                        <!-- More products... -->
                     </div>
+                </section>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
 
-                    <!-- Product Card 3 -->
-                    <div class="product-card group cursor-pointer">
-                        <div class="relative bg-neutral-900 rounded-2xl p-6 mb-4 overflow-hidden border border-neutral-800 group-hover:border-neutral-700 transition">
-                            <img src="https://images.unsplash.com/photo-1605348532760-6753d2c43329?auto=format&fit=crop&q=80&w=800" class="w-full h-48 object-contain">
-                        </div>
-                        <div class="space-y-1">
-                            <p class="text-[10px] font-black uppercase text-neutral-600 tracking-widest">Nike / Lifestyle</p>
-                            <h3 class="font-bold text-lg">Nike Air Force 1</h3>
-                            <span class="text-white font-black">$110.00</span>
-                        </div>
-                    </div>
 
-                </div>
-
-                <!-- Pagination -->
-                <div class="mt-16 flex items-center justify-center gap-2">
-                    <button class="w-10 h-10 flex items-center justify-center rounded border border-neutral-800 text-neutral-500 hover:border-white hover:text-white transition">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg>
-                    </button>
-                    <button class="w-10 h-10 flex items-center justify-center rounded bg-white text-black font-black">1</button>
-                    <button class="w-10 h-10 flex items-center justify-center rounded border border-neutral-800 text-neutral-500 hover:border-white hover:text-white transition">2</button>
-                    <button class="w-10 h-10 flex items-center justify-center rounded border border-neutral-800 text-neutral-500 hover:border-white hover:text-white transition">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
-                    </button>
-                </div>
-            </section>
-        </div>
-    </main>
-        {% endblock %}
-    </main>
-
-{% block footer %}
-    <!-- default empty footer -->
-    {% include "home/partials/footer.html" %}
 {% endblock %}
