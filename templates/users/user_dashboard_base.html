@@ -1,5 +1,5 @@
 {% load static%}
-<!DOCTYPE html>       
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -14,13 +14,42 @@
         ::-webkit-scrollbar-thumb { background: #404040; border-radius: 4px; }
         ::-webkit-scrollbar-track { background: #000000; }
         input[type=range] { accent-color: white; }
+
+        /* Toast Animation - Centered Slide Down */
+        @keyframes slideInDown {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes fadeOutCenter {
+            from { opacity: 1; transform: scale(1); }
+            to { opacity: 0; transform: scale(0.95); }
+        }
+        .toast-animate-in {
+            animation: slideInDown 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .toast-animate-out {
+            animation: fadeOutCenter 0.3s ease forwards;
+        }
+        .progress-bar {
+            height: 2px;
+            width: 100%;
+            background: rgba(255,255,255,0.2);
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            transform-origin: left;
+        }
+        @keyframes shrink {
+            from { transform: scaleX(1); }
+            to { transform: scaleX(0); }
+        }
     </style>
     {% block extra_head %}{% endblock %}
 </head>
 <body class="bg-black text-white min-h-screen">
 
-    <!-- HEADER MOCK -->
-    <header class="bg-black text-white shadow-lg border-b border-neutral-900 sticky top-0 z-50">
+    <!-- HEADER -->
+    <header class="bg-black/80 backdrop-blur-md text-white shadow-lg border-b border-neutral-900 sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
             <div class="text-2xl font-extrabold tracking-tight text-white">
                 <span class="text-neutral-500">Game</span>Wear
@@ -31,17 +60,89 @@
                 <a href="#" class="text-neutral-400 hover:text-white transition duration-200 font-medium">About Us</a>
             </nav>
             <div class="flex items-center space-x-4">
-                <div class="flex items-center gap-3 bg-neutral-900 px-3 py-1.5 rounded-full border border-neutral-800">
-                    <span class="text-xs font-bold text-neutral-400">Hi, Alex</span>
+                <a href="{% url 'users:user_profile' %}"
+                   class="flex items-center gap-3 bg-neutral-900 px-3 py-1.5 rounded-full border border-neutral-800 hover:border-neutral-600 transition">
+                    <span class="text-xs font-bold text-neutral-400">
+                        Hi, {{ request.user.full_name|default:"User" }}
+                    </span>
                     <div class="w-8 h-8 rounded-full bg-neutral-700 flex items-center justify-center">
-                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
                     </div>
-                </div>
+                </a>
             </div>
         </div>
     </header>
 
-    <!-- MAIN CONTENT MOCK -->
-   <main class="min-h-screen flex items-center justify-center">
+    <!-- CENTERED MESSAGE DISPLAY -->
+    {% if messages %}
+    <div id="toast-container" class="fixed top-24 left-1/2 -translate-x-1/2 z-[60] flex flex-col items-center gap-3 w-full max-w-md px-4 pointer-events-none">
+        {% for message in messages %}
+        <div class="toast-message toast-animate-in pointer-events-auto relative overflow-hidden group flex items-start gap-4 p-4 rounded-xl border backdrop-blur-md shadow-2xl transition-all duration-300 w-full
+            {% if message.tags == 'success' %}
+                bg-emerald-950/90 border-emerald-500/50 text-emerald-100
+            {% elif message.tags == 'error' %}
+                bg-rose-950/90 border-rose-500/50 text-rose-100
+            {% elif message.tags == 'warning' %}
+                bg-amber-950/90 border-amber-500/50 text-amber-100
+            {% else %}
+                bg-neutral-900/95 border-neutral-700 text-neutral-100
+            {% endif %}"
+             role="alert">
+            
+            <!-- Icon -->
+            <div class="flex-shrink-0 mt-0.5">
+                {% if message.tags == 'success' %}
+                <svg class="w-5 h-5 text-emerald-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                {% elif message.tags == 'error' %}
+                <svg class="w-5 h-5 text-rose-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path></svg>
+                {% else %}
+                <svg class="w-5 h-5 text-neutral-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>
+                {% endif %}
+            </div>
+
+            <!-- Content -->
+            <div class="flex-1 pr-4">
+                <p class="text-sm font-medium leading-tight">{{ message }}</p>
+            </div>
+
+            <!-- Close Button -->
+            <button onclick="removeToast(this.parentElement)" class="flex-shrink-0 text-white/40 hover:text-white transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+
+            <!-- Progress Bar -->
+            <div class="progress-bar" style="animation: shrink 4s linear forwards;"></div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- MAIN CONTENT -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         {% block content %}{% endblock %}
     </main>
+
+    <script>
+        function removeToast(el) {
+            el.classList.add('toast-animate-out');
+            setTimeout(() => {
+                el.remove();
+            }, 300);
+        }
+
+        // Auto-dismiss logic
+        document.addEventListener('DOMContentLoaded', () => {
+            const toasts = document.querySelectorAll('.toast-message');
+            toasts.forEach(toast => {
+                setTimeout(() => {
+                    if (toast.parentNode) {
+                        removeToast(toast);
+                    }
+                }, 4000);
+            });
+        });
+    </script>
+</body>
+</html>
