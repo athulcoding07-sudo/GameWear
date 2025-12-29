@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth import get_user_model
 
+
 User = get_user_model()
 
 
@@ -91,3 +92,69 @@ class UserSignupForm(forms.ModelForm):
             user.save()
 
         return user
+class UserEditProfileForm(forms.ModelForm):
+
+   
+    class Meta:
+        model = User
+        fields = ["full_name",  "phone_number", "dob", "gender","profile_image"]
+        widgets = {
+            "dob": forms.DateInput(
+                attrs={
+                    "type": "date",
+                    "class": "w-full bg-black border border-neutral-800 rounded-xl px-4 py-4 text-sm text-white focus:border-white focus:outline-none transition",
+                }
+            )
+        }
+
+    #     widgets = {
+    #         "full_name": forms.TextInput(attrs={"placeholder": "Full name"}),
+    #         "email": forms.EmailInput(attrs={"placeholder": "Email address"}),
+    #         "phone_number": forms.TextInput(attrs={"placeholder": "Phone number"}),
+    #         "dob": forms.DateInput(
+    #             attrs={
+    #                 "type": "date",
+    #                 "placeholder": "Date of birth",
+    #             }
+    #         ),
+    #         "gender": forms.Select(),
+    #     }
+
+    # def __init__(self, *args, **kwargs):
+    #     super().__init__(*args, **kwargs)
+
+    #     common_classes = (
+    #         "w-full px-4 py-3 bg-neutral-800 border border-neutral-700 "
+    #         "rounded-lg focus:ring-2 focus:ring-white text-white"
+    #     )
+
+    #     for field in self.fields.values():
+    #         field.widget.attrs.setdefault("class", common_classes)
+
+    # ---------- VALIDATIONS ----------
+
+    
+
+    def clean_phone_number(self):
+        phone = self.cleaned_data.get("phone_number")
+
+        if phone and not phone.isdigit():
+            raise forms.ValidationError("Phone number must contain only digits.")
+
+        if User.objects.filter(phone_number=phone).exclude(pk=self.instance.pk).exists():
+            raise forms.ValidationError("This phone number is already in use.")
+
+        return phone
+
+    def clean_dob(self):
+        dob = self.cleaned_data.get("dob")
+
+        if dob is None:
+            return dob
+
+        from datetime import date
+
+        if dob > date.today():
+            raise forms.ValidationError("Date of birth cannot be in the future.")
+
+        return dob

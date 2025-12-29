@@ -1,7 +1,7 @@
 from django.shortcuts import render,redirect
 from django.contrib import messages
 from django.db import IntegrityError
-from .forms import UserSignupForm
+from .forms import UserSignupForm,UserEditProfileForm
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
@@ -9,6 +9,8 @@ from django.contrib.auth.hashers import make_password
 from django.utils import timezone
 from django.shortcuts import get_object_or_404
 from apps.otp.services import send_otp,verify_otp,resend_otp
+from django.contrib.auth import update_session_auth_hash
+
 
 
 # Create your views here.
@@ -35,42 +37,28 @@ def signup_view(request):
                 user = form.save(commit=False)
                 user.is_active = False
                 user.save()
-
-                
                 # Send OTP email
                 send_otp(user, "signup")
-
                 # Store user id in session for OTP verification
                 request.session["signup_user_id"] = user.id
-
                 messages.success(request, "OTP sent to your email. Please verify.")
                 return redirect("users:verify_signup_otp")
-
             else:
                 messages.error(request, "Please correct the errors below.")
-
         except IntegrityError:
             messages.error(
                 request,
                 "A user with this email or phone already exists."
             )
-
         except Exception:
             messages.error(
                 request,
                 "Something went wrong. Please try again later."
             )
-
     else:
         form = UserSignupForm()
 
     return render(request, "users/signup.html", {"form": form})
-
-
-
-
-
-
 
 
 def verify_signup_otp(request):
@@ -103,9 +91,6 @@ def verify_signup_otp(request):
         messages.error(request, message)
 
     return render(request, "users/verify_signup_otp.html")
-
-
-
     
 def resend_signup_otp(request):
     """
@@ -139,24 +124,18 @@ def login_view(request):
     if request.method == "POST":
         email = request.POST.get("email")
         password = request.POST.get("password")
-
         # authenticate user
         user = authenticate(request, email=email, password=password)
-
         if user is not None:
             login(request, user)
             messages.success(request, "Login successful")
-
             # ADMIN
             if user.is_staff or user.role == "admin":
                 return redirect("adminpanel:dashboard")
-
             # NORMAL USER
             return redirect("users:dashboard")
-
         else:
             messages.error(request, "Invalid email or password")
-
     return render(request, "users/login.html")
 
 
@@ -255,16 +234,84 @@ def reset_password_view(request):
     return render(request,'users/reset_password.html',{"validlink": True})
 
 
+@login_required
+def user_dashboard(request):
+    """
+    - show the user dashboard
+    
+    """
+    return render(request, "users/dashboard.html")
 
+@login_required
+def user_profile_view(request):
+    """
+    - show the user profile
+    """
 
+    return render(request, "users/profile/profile_view.html")
+
+@login_required
+def user_profile_edit_view(request):
+    if request.method == "POST":
+        
+        form = UserEditProfileForm(request.POST, request.FILES, instance=request.user)
+        
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Profile updated successfully.")
+            return redirect("users:user_profile_edit")
+        else:
+            print(form.errors)
+    else:
+        form = UserEditProfileForm(instance=request.user)
+
+    return render(request, "users/profile/edit_profile.html", {"form": form})
 
 
 
 
 @login_required
-def user_dashboard(request):
+def user_update_password_view(request):
     """
-    - show the user dashboard
-    -
+    Allow logged-in user to update their password.
+    - Verifies old password
+    - Confirms new password match
+    - Keeps user logged in after change
     """
-    return render(request, "users/dashboard.html")
+
+    if request.method == "POST":
+        old_password = request.POST.get("old_password")
+        new_password1 = request.POST.get("new_password1")
+        new_password2 = request.POST.get("new_password2")
+
+        # 1️⃣ Validate fields
+        if not old_password or not new_password1 or not new_password2:
+            messages.error(request, "All fields are required.")
+            return redirect("users:user_profile_edit")
+
+        # 2️⃣ Check old password
+        if not request.user.check_password(old_password):
+            messages.error(request, "Current password is incorrect.")
+            return redirect("users:user_profile_edit")
+
+        # 3️⃣ Check new password match
+        if new_password1 != new_password2:
+            messages.error(request, "New passwords do not match.")
+            return redirect("users:user_profile_edit")
+
+        # 4️⃣ Set new password
+        request.user.set_password(new_password1)
+        request.user.save()
+
+        # 5️⃣ Keep user logged in
+        update_session_auth_hash(request, request.user)
+
+        messages.success(request, "Password updated successfully.")
+        return redirect("users:user_profile")
+
+    return render(request, "users/update_password.html")
+
+
+
+    
+

@@ -12,6 +12,9 @@ from .views import (
     verify_reset_otp,
     resend_reset_otp,
     reset_password_view,
+    user_profile_view,
+    user_profile_edit_view,
+    user_update_password_view
     
 )
 #from .views import login_view,signup_view,user_dashboard,verify_signup_otp,resend_signup_otp,forgot_password_view,verify_reset_otp
@@ -28,7 +31,10 @@ urlpatterns = [
     path("forgot-password/", forgot_password_view, name="forgot_password"),
     path("verify-reset-otp/", verify_reset_otp, name="verify_reset_otp"),
     path("resend-reset-otp/", resend_reset_otp, name="resend_reset_otp"),
-    path("reset_password/", reset_password_view, name="reset_password"),
+    path("reset-password/", reset_password_view, name="reset_password"),
+    path("user-profile/",user_profile_view, name="user_profile"),
+    path("user-profile-edit/",user_profile_edit_view, name="user_profile_edit"),
+    path("user-update-password/",user_update_password_view, name="user_update_password"),
 
 
 ]
