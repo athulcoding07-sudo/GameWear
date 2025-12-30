@@ -1,5 +1,7 @@
 from django import forms
 from django.contrib.auth import get_user_model
+from .models import PendingEmail
+
 
 
 User = get_user_model()
@@ -158,3 +160,47 @@ class UserEditProfileForm(forms.ModelForm):
             raise forms.ValidationError("Date of birth cannot be in the future.")
 
         return dob
+    
+
+
+
+
+
+
+
+class EmailChangeForm(forms.ModelForm):
+    class Meta:
+        model = PendingEmail
+        fields = ["new_email"]
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop("user", None)  # ✅ remove user safely
+        super().__init__(*args, **kwargs)
+
+    def clean_new_email(self):
+        new_email = self.cleaned_data.get("new_email")
+
+        if not self.user:
+            raise forms.ValidationError("User context is missing.")
+
+        # 1️⃣ Same as current email
+        if new_email == self.user.email:
+            raise forms.ValidationError(
+                "This is already your current email."
+            )
+
+        # 2️⃣ Email already used by another user
+        if User.objects.filter(email=new_email).exists():
+            raise forms.ValidationError(
+                "This email is already registered."
+            )
+
+        # 3️⃣ Email pending for another user
+        if PendingEmail.objects.filter(
+            new_email=new_email
+        ).exclude(user=self.user).exists():
+            raise forms.ValidationError(
+                "This email is already pending verification."
+            )
+
+        return new_email

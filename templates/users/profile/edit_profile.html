@@ -28,10 +28,13 @@
                     <i data-lucide="user" class="w-4 h-4"></i>
                     Edit Profile
                 </button>
-                <button onclick="switchTab('email')" id="btn-email" class="action-button flex items-center gap-3 px-6 py-4 rounded-xl bg-neutral-900 text-neutral-400 hover:text-white font-black uppercase text-[10px] tracking-widest border border-neutral-800 transition">
-                    <i data-lucide="mail" class="w-4 h-4"></i>
-                    Edit Email
-                </button>
+                <a href="{% url 'users:request_email_change_sent_otp' %}"
+   id="btn-email"
+   class="action-button flex items-center gap-3 px-6 py-4 rounded-xl bg-neutral-900 text-neutral-400 hover:text-white font-black uppercase text-[10px] tracking-widest border border-neutral-800 transition">
+    <i data-lucide="mail" class="w-4 h-4"></i>
+    Edit Email
+</a>
+
                 <button onclick="switchTab('password')" id="btn-password" class="action-button flex items-center gap-3 px-6 py-4 rounded-xl bg-neutral-900 text-neutral-400 hover:text-white font-black uppercase text-[10px] tracking-widest border border-neutral-800 transition">
                     <i data-lucide="lock" class="w-4 h-4"></i>
                     Change Password
@@ -157,10 +160,11 @@
 
          
             <!-- Email Form Section -->
-            <div id="section-email" class="settings-section hidden">
+            {% comment %} <div id="section-email" class="settings-section hidden">
                 <div class="bg-neutral-950 border border-neutral-900 rounded-3xl p-8">
                     <h2 class="text-xl font-black uppercase tracking-tighter italic mb-8">Update Email</h2>
-                    <form action="#" method="POST" class="max-w-md space-y-6">
+                    
+                    <form action="{% url 'users:request_email_change_sent_otp' %}" method="POST" class="max-w-md space-y-6">
                         {% csrf_token %}
                         <div class="space-y-2">
                             <label class="text-[10px] font-black text-neutral-500 uppercase tracking-widest px-1">New Email Address</label>
@@ -172,13 +176,13 @@
                         </button>
                     </form>
                 </div>
-            </div>
+            </div> {% endcomment %}
 
             <!-- Password Form Section -->
             <div id="section-password" class="settings-section hidden">
                 <div class="bg-neutral-950 border border-neutral-900 rounded-3xl p-8">
                     <h2 class="text-xl font-black uppercase tracking-tighter italic mb-8">Security Check</h2>
-                    <form action="{% url 'users:user_update_password' %} "method="POST" class="max-w-md space-y-6">
+                    <form action=" {% url 'users:user_update_password' %} " method="POST" class="max-w-md space-y-6">
                         {% csrf_token %}
                         <div class="space-y-2">
                             <label class="text-[10px] font-black text-neutral-500 uppercase tracking-widest px-1">Current Password</label>
