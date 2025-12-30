@@ -13,7 +13,7 @@ def generate_otp():
     return str(random.randint(100000, 999999))
 
 
-def send_otp(user, purpose):
+def send_otp(user, purpose, email=None):
     # invalidate old OTPs of same purpose
     OTP.objects.filter(
         user=user,
@@ -28,7 +28,16 @@ def send_otp(user, purpose):
         expires_at=timezone.now() + timedelta(minutes=OTP_EXPIRY_MINUTES),
     )
 
-    send_otp_email(user, otp.code,otp.purpose)
+    to_email = email if email else user.email
+
+    send_otp_email(
+        to_email=to_email,
+        user_name=user.full_name,
+        otp=otp.code,
+        purpose=otp.purpose,
+        expiry_minutes=OTP_EXPIRY_MINUTES
+    )
+
     return otp
 
 
@@ -53,7 +62,7 @@ def verify_otp(user, purpose, code):
     return True, "OTP verified"
 
 
-def resend_otp(user, purpose):
+def resend_otp(user, purpose, email=None):
     try:
         otp = OTP.objects.filter(
             user=user,
@@ -80,5 +89,14 @@ def resend_otp(user, purpose):
         resend_count=otp.resend_count + 1,
     )
 
-    send_otp_email(user, new_otp.code,new_otp.purpose)
-    return True, "OTP resent"
+    to_email = email if email else user.email
+
+    send_otp_email(
+        to_email=to_email,
+        user_name=user.full_name,
+        otp=new_otp.code,
+        purpose=new_otp.purpose,
+        expiry_minutes=OTP_EXPIRY_MINUTES
+    )
+
+    return True, "OTP resent successfully"

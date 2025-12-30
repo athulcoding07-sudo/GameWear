@@ -95,6 +95,13 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return str(self.email)
+    
+    # users/models.py
+class PendingEmail(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    new_email = models.EmailField(unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
 
 
 

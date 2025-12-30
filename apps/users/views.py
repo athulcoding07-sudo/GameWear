@@ -1,7 +1,7 @@
 from django.shortcuts import render,redirect
 from django.contrib import messages
 from django.db import IntegrityError
-from .forms import UserSignupForm,UserEditProfileForm
+from .forms import UserSignupForm,UserEditProfileForm,EmailChangeForm
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
@@ -10,6 +10,7 @@ from django.utils import timezone
 from django.shortcuts import get_object_or_404
 from apps.otp.services import send_otp,verify_otp,resend_otp
 from django.contrib.auth import update_session_auth_hash
+from .models import PendingEmail
 
 
 
@@ -310,6 +311,101 @@ def user_update_password_view(request):
         return redirect("users:user_profile")
 
     return render(request, "users/update_password.html")
+
+
+
+@login_required
+def request_email_change_sent_otp(request):
+    if request.method == "POST":
+        form = EmailChangeForm(request.POST, user=request.user)  # ✅ FIX
+
+        if form.is_valid():
+            new_email = form.cleaned_data["new_email"]
+
+            PendingEmail.objects.update_or_create(
+                user=request.user,
+                defaults={"new_email": new_email}
+            )
+
+            send_otp(
+                user=request.user,
+                purpose="email_change",
+                email=new_email
+            )
+
+            request.session["email_change"] = True
+            messages.success(request, "OTP sent to new email.")
+            return redirect("users:verify_email_change_otp")
+
+        
+
+    else:
+        form = EmailChangeForm(user=request.user)  # ✅ also pass user on GET
+
+    return render(
+        request,
+        "users/profile/email_view.html",
+        {"form": form}
+    )
+
+@login_required
+def verify_email_change_otp(request):
+    if not request.session.get("email_change"):
+        return redirect("users:user_profile_edit")
+
+    if request.method == "POST":
+        otp = request.POST.get("otp")
+
+        # Reuse existing verification logic
+        if verify_otp(
+            user=request.user,
+            purpose="email_change",
+            code=otp
+        ):
+            pending = PendingEmail.objects.get(user=request.user)
+
+            # Update real email ONLY now
+            request.user.email = pending.new_email
+            request.user.save(update_fields=["email"])
+
+            pending.delete()
+            request.session.pop("email_change")
+
+            messages.success(request, "Email updated successfully.")
+            return redirect("users:user_profile_edit")
+
+        messages.error(request, "Invalid or expired OTP.")
+
+    return render(request, "users/profile/verify_email_otp.html")
+
+@login_required
+def resend_email_change_otp(request):
+    """
+    - resend email change otp
+    - confirm session exists
+    - confirm pending email exists
+    - resend otp to NEW email
+    """
+
+    if not request.session.get("email_change"):
+        messages.error(request, "Session expired. Please try again.")
+        return redirect("users:user_profile_edit")
+
+    try:
+        pending = PendingEmail.objects.get(user=request.user)
+    except PendingEmail.DoesNotExist:
+        messages.error(request, "No pending email change found.")
+        return redirect("users:user_profile_edit")
+
+    # Reuse your existing resend_otp logic
+    success, message = resend_otp(
+        user=request.user,
+        purpose="email_change",
+        email=pending.new_email   # IMPORTANT
+    )
+
+    messages.info(request, message)
+    return redirect("users:verify_email_change_otp")
 
 
 
