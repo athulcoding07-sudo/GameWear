@@ -18,6 +18,10 @@ from .views import (
     request_email_change_sent_otp,
     verify_email_change_otp,
     resend_email_change_otp,
+    address_view,
+    add_address,
+    edit_address,
+    delete_address,
 
     
 )
@@ -42,6 +46,12 @@ urlpatterns = [
     path("request-email-change-sent-otp/",request_email_change_sent_otp, name="request_email_change_sent_otp"),
     path("verify-email-change-otp/",verify_email_change_otp, name="verify_email_change_otp"),
     path("resend-email-change-otp/",resend_email_change_otp, name="resend_email_change_otp"),
+    path('address-view',address_view,name = "address_view"),
+    path("add-address",add_address,name = "add_address"),
+    path("edit-address",edit_address,name = "edit_address"),
+    path("delete-address",delete_address,name = "delete_address"),
+
+
 
     
 
