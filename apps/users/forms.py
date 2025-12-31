@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth import get_user_model
-from .models import PendingEmail
+from .models import PendingEmail,Address
 
 
 
@@ -204,3 +204,21 @@ class EmailChangeForm(forms.ModelForm):
             )
 
         return new_email
+
+
+
+
+class AddressForm(forms.ModelForm):
+    class Meta:
+        model = Address
+        fields = [
+            "full_name",
+            "phone",
+            "address_line_1",
+            "address_line_2",
+            "city",
+            "state",
+            "postal_code",
+            "country",
+            "is_default",
+        ]

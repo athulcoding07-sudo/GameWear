@@ -1,7 +1,7 @@
 from django.shortcuts import render,redirect
 from django.contrib import messages
 from django.db import IntegrityError
-from .forms import UserSignupForm,UserEditProfileForm,EmailChangeForm
+from .forms import UserSignupForm,UserEditProfileForm,EmailChangeForm,AddressForm
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
@@ -10,7 +10,7 @@ from django.utils import timezone
 from django.shortcuts import get_object_or_404
 from apps.otp.services import send_otp,verify_otp,resend_otp
 from django.contrib.auth import update_session_auth_hash
-from .models import PendingEmail
+from .models import PendingEmail,Address
 
 
 
@@ -31,7 +31,7 @@ def signup_view(request):
     
     if request.method == "POST":
         form = UserSignupForm(request.POST)
-        print('hi ...')
+        
         try:
             if form.is_valid():
                 # Create user but do NOT activate yet
@@ -408,6 +408,86 @@ def resend_email_change_otp(request):
     return redirect("users:verify_email_change_otp")
 
 
+# Updated logic for your views.py
+@login_required
+def address_view(request):
+    # Fetch all addresses belonging to the logged-in user
+    addresses = Address.objects.filter(user=request.user)
+    return render(request, "users/profile/address/address_view.html", {
+        "addresses": addresses
+    })
 
+
+@login_required
+def add_address(request):
     
+    if request.method == "POST":
+        
+        form = AddressForm(request.POST)
+        if form.is_valid():
+            address = form.save(commit=False)
+            address.user = request.user
+            # If setting default, unset others
+            if address.is_default:
+                request.user.addresses.update(is_default=False)
+            address.save()
+            messages.success(request, "Address saved successfully.")
+            return redirect("users:address_view")  # change to your page
+        else:
+            messages.error(request,'form is not valid')
+    else:
+        form = AddressForm()
+
+    return render(request, "users/profile/address/address_view.html", {"form": form})
+    
+
+@login_required
+def edit_address(request, address_id=None):
+    # Check for the ID in the URL or the POST data to avoid TypeError
+    target_id = address_id or request.POST.get('address_id')
+    
+    if not target_id:
+        messages.error(request, "Address ID is missing.")
+        return redirect("users:address_view")
+
+    # Fetch the specific address belonging to the user
+    address = get_object_or_404(Address, id=target_id, user=request.user)
+    
+    if request.method == "POST":
+        form = AddressForm(request.POST, instance=address)
+        if form.is_valid():
+            updated_address = form.save(commit=False)
+            
+            # If this address is being set as default, unset all others
+            if updated_address.is_default:
+                Address.objects.filter(user=request.user).exclude(id=target_id).update(is_default=False)
+            
+            updated_address.save()
+            messages.success(request, "Address updated successfully.")
+            return redirect("users:address_view")
+        else:
+            messages.error(request, "Please correct the errors below.")
+    else:
+        form = AddressForm(instance=address)
+    
+    return render(request, "users/profile/address/address_view.html", {"form": form, "edit_address": address})
+
+@login_required
+def delete_address(request, address_id=None):
+    # The error occurred because address_id was missing in the URL path.
+    # We allow address_id to be None and check POST data as a fallback.
+    target_id = address_id or request.POST.get('address_id')
+    
+    if not target_id:
+        messages.error(request, "Address ID is missing.")
+        return redirect("users:address_view")
+
+    # Ensure user can only delete their own address
+    address = get_object_or_404(Address, id=target_id, user=request.user)
+    
+    if request.method == "POST":
+        address.delete()
+        messages.success(request, "Address deleted successfully.")
+    
+    return redirect("users:address_view")
 

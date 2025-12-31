@@ -3,228 +3,214 @@
 {% block title %}GameWear - Account Settings{% endblock %}
 
 {% block content %}
-    <div class="flex-grow bg-black">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            
-            <!-- Back Button -->
-            <div class="mb-8">
-                <a href="{% url 'users:user_profile' %}" class="inline-flex items-center text-neutral-500 hover:text-white transition group">
-                    <i data-lucide="arrow-left" class="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform"></i>
-                    <span class="text-xs font-black uppercase tracking-widest">Back to Profile</span>
-                </a>
-            </div>
 
-            <!-- Page Title -->
-            <div class="mb-10">
-                <h1 class="text-4xl font-black uppercase tracking-tighter italic italic">Account Settings</h1>
-                <p class="text-neutral-500 text-sm mt-2">Manage your profile, identity, and security preferences.</p>
-            </div>
 
-           
 
-            <!-- Settings Navigation Buttons -->
-            <div class="flex flex-wrap gap-4 mb-10">
-                <button onclick="switchTab('profile')" id="btn-profile" class="action-button active flex items-center gap-3 px-6 py-4 rounded-xl font-black uppercase text-[10px] tracking-widest border border-neutral-800 transition shadow-xl">
-                    <i data-lucide="user" class="w-4 h-4"></i>
-                    Edit Profile
-                </button>
-                <a href="{% url 'users:request_email_change_sent_otp' %}"
-   id="btn-email"
-   class="action-button flex items-center gap-3 px-6 py-4 rounded-xl bg-neutral-900 text-neutral-400 hover:text-white font-black uppercase text-[10px] tracking-widest border border-neutral-800 transition">
-    <i data-lucide="mail" class="w-4 h-4"></i>
-    Edit Email
-</a>
+        <!-- Back Button -->
+        <div class="mb-8">
+            <a href="{% url 'users:user_profile' %}"
+               class="inline-flex items-center text-neutral-500 hover:text-white transition group">
+                <i data-lucide="arrow-left"
+                   class="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform"></i>
+                <span class="text-xs font-black uppercase tracking-widest">
+                    Back to Profile
+                </span>
+            </a>
+        </div>
 
-                <button onclick="switchTab('password')" id="btn-password" class="action-button flex items-center gap-3 px-6 py-4 rounded-xl bg-neutral-900 text-neutral-400 hover:text-white font-black uppercase text-[10px] tracking-widest border border-neutral-800 transition">
-                    <i data-lucide="lock" class="w-4 h-4"></i>
-                    Change Password
-                </button>
-            </div>
+        <!-- Page Title -->
+        <div class="mb-10">
+            <h1 class="text-4xl font-black uppercase tracking-tighter italic">
+                Account Settings
+            </h1>
+            <p class="text-neutral-500 text-sm mt-2">
+                Manage your profile, identity, and security preferences.
+            </p>
+        </div>
 
-            <!-- Profile Form Section -->
-             <div id="section-profile" class="settings-section">
-    <div class="bg-neutral-950 border border-neutral-900 rounded-3xl overflow-hidden">
-        <div class="p-8">
-            <form action="{% url 'users:user_profile_edit' %}" method="POST" enctype="multipart/form-data" class="space-y-8">
-                {% csrf_token %}
-                
-                <!-- Avatar Upload -->
-                <div class="flex flex-col md:flex-row items-center gap-8 pb-8 border-b border-neutral-900">
-                    <div class="relative">
-                        <div class="w-24 h-24 rounded-3xl bg-neutral-800 border border-neutral-700 overflow-hidden">
-                            <!-- Show current image or fallback -->
-                            <img src="{% if user.profile_image %}{{ user.profile_image.url }}{% else %}https://api.dicebear.com/7.x/avataaars/svg?seed={{ user.full_name }}{% endif %}" alt="Avatar" class="w-full h-full object-cover">
-                        </div>
-                        <label class="absolute -bottom-2 -right-2 bg-white text-black p-2 rounded-xl shadow-lg cursor-pointer hover:scale-105 transition">
-                            <i data-lucide="camera" class="w-4 h-4"></i>
-                            <!-- Match field name 'profile_image' -->
-                            <input type="file" name="profile_image" id="id_profile_image" class="hidden">
-                        </label>
-                    </div>
-                    <div class="text-center md:text-left">
-                        <h3 class="text-sm font-black uppercase tracking-widest">Profile Picture</h3>
-                        <p class="text-neutral-600 text-[10px] uppercase mt-1">Recommended size: 400x400px</p>
-                        
-                        <!-- Field Error: Profile Image -->
-                        {% if form.profile_image.errors %}
-                            {% for error in form.profile_image.errors %}
-                                <p class="text-red-500 text-[10px] font-bold mt-2 uppercase tracking-tight">{{ error }}</p>
-                            {% endfor %}
-                        {% endif %}
-                    </div>
-                </div>
+        <!-- Navigation Buttons -->
+        <div class="flex flex-wrap gap-4 mb-10">
+            <button
+                id="btn-profile"
+                onclick="switchTab('profile')"
+                class="action-button active flex items-center gap-3 px-6 py-4 rounded-xl font-black uppercase text-[10px] tracking-widest border border-neutral-800 transition shadow-xl">
+                <i data-lucide="user" class="w-4 h-4"></i>
+                Edit Profile
+            </button>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <!-- Full Name -->
-                    <div class="space-y-2">
-                        <label for="id_full_name" class="text-[10px] font-black text-neutral-500 uppercase tracking-widest px-1">Full Name</label>
-                        <input type="text" name="full_name" id="id_full_name" 
-                            value="{{ form.full_name.value|default:user.full_name }}" 
-                            class="w-full bg-black border {% if form.full_name.errors %}border-red-600{% else %}border-neutral-800{% endif %} rounded-xl px-4 py-4 text-sm text-white focus:border-white focus:outline-none transition">
-                        
-                        <!-- Field Error: Full Name -->
-                        {% if form.full_name.errors %}
-                            {% for error in form.full_name.errors %}
-                                <p class="text-red-500 text-[10px] font-bold px-1 uppercase tracking-tight">{{ error }}</p>
-                            {% endfor %}
-                        {% endif %}
-                    </div>
+            <a href="{% url 'users:request_email_change_sent_otp' %}"
+               id="btn-email"
+               class="action-button flex items-center gap-3 px-6 py-4 rounded-xl bg-neutral-900 text-neutral-400 hover:text-white font-black uppercase text-[10px] tracking-widest border border-neutral-800 transition">
+                <i data-lucide="mail" class="w-4 h-4"></i>
+                Edit Email
+            </a>
 
-                    <!-- Gender -->
-                    <div class="space-y-2">
-                        <label for="id_gender" class="text-[10px] font-black text-neutral-500 uppercase tracking-widest px-1">Gender</label>
-                        <div class="relative">
-                            <select name="gender" id="id_gender" 
-                                class="w-full bg-black border {% if form.gender.errors %}border-red-600{% else %}border-neutral-800{% endif %} rounded-xl px-4 py-4 text-sm text-white focus:border-white focus:outline-none transition appearance-none">
-                                <option value="male" {% if form.gender.value == 'male' or user.gender == 'male' %}selected{% endif %}>Male</option>
-                                <option value="female" {% if form.gender.value == 'female' or user.gender == 'female' %}selected{% endif %}>Female</option>
-                                <option value="other" {% if form.gender.value == 'other' or user.gender == 'other' %}selected{% endif %}>Other</option>
-                            </select>
-                            <div class="absolute inset-y-0 right-4 flex items-center pointer-events-none text-neutral-500">
-                                <i data-lucide="chevron-down" class="w-4 h-4"></i>
+            <button
+                id="btn-password"
+                onclick="switchTab('password')"
+                class="action-button flex items-center gap-3 px-6 py-4 rounded-xl bg-neutral-900 text-neutral-400 hover:text-white font-black uppercase text-[10px] tracking-widest border border-neutral-800 transition">
+                <i data-lucide="lock" class="w-4 h-4"></i>
+                Change Password
+            </button>
+        </div>
+
+        <!-- ================= PROFILE SECTION ================= -->
+        <div id="section-profile" class="settings-section">
+            <div class="bg-neutral-950 border border-neutral-900 rounded-3xl overflow-hidden">
+                <div class="p-8">
+                    <form
+                        action="{% url 'users:user_profile_edit' %}"
+                        method="POST"
+                        enctype="multipart/form-data"
+                        class="space-y-8">
+                        {% csrf_token %}
+
+                        <!-- Avatar -->
+                        <div class="flex flex-col md:flex-row items-center gap-8 pb-8 border-b border-neutral-900">
+                            <div class="relative">
+                                <div class="w-24 h-24 rounded-3xl bg-neutral-800 border border-neutral-700 overflow-hidden">
+                                    <img
+                                        src="{% if user.profile_image %}{{ user.profile_image.url }}{% else %}https://api.dicebear.com/7.x/avataaars/svg?seed={{ user.full_name }}{% endif %}"
+                                        alt="Avatar"
+                                        class="w-full h-full object-cover">
+                                </div>
+
+                                <label
+                                    class="absolute -bottom-2 -right-2 bg-white text-black p-2 rounded-xl shadow-lg cursor-pointer hover:scale-105 transition">
+                                    <i data-lucide="camera" class="w-4 h-4"></i>
+                                    <input type="file" name="profile_image" id="id_profile_image" class="hidden">
+                                </label>
+                            </div>
+
+                            <div class="text-center md:text-left">
+                                <h3 class="text-sm font-black uppercase tracking-widest">
+                                    Profile Picture
+                                </h3>
+                                <p class="text-neutral-600 text-[10px] uppercase mt-1">
+                                    Recommended size: 400×400px
+                                </p>
+
+                                {% for error in form.profile_image.errors %}
+                                    <p class="text-red-500 text-[10px] font-bold mt-2 uppercase">
+                                        {{ error }}
+                                    </p>
+                                {% endfor %}
                             </div>
                         </div>
-                        
-                        <!-- Field Error: Gender -->
-                        {% if form.gender.errors %}
-                            {% for error in form.gender.errors %}
-                                <p class="text-red-500 text-[10px] font-bold px-1 uppercase tracking-tight">{{ error }}</p>
-                            {% endfor %}
-                        {% endif %}
-                    </div>
 
-                    <!-- Date of Birth -->
-                    <div class="space-y-2">
-    <label for="{{ form.dob.id_for_label }}"
-        class="text-[10px] font-black text-neutral-500 uppercase tracking-widest px-1">
-        Date of Birth
-    </label>
+                        <!-- Fields -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
 
-    {{ form.dob }}
+                            <!-- Full Name -->
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-black text-neutral-500 uppercase tracking-widest px-1">
+                                    Full Name
+                                </label>
+                                <input
+                                    type="text"
+                                    name="full_name"
+                                    value="{{ form.full_name.value|default:user.full_name }}"
+                                    class="w-full bg-black border {% if form.full_name.errors %}border-red-600{% else %}border-neutral-800{% endif %} rounded-xl px-4 py-4 text-sm text-white focus:border-white focus:outline-none transition">
+                                {% for error in form.full_name.errors %}
+                                    <p class="text-red-500 text-[10px] font-bold px-1 uppercase">
+                                        {{ error }}
+                                    </p>
+                                {% endfor %}
+                            </div>
 
-    {% if form.dob.errors %}
-        {% for error in form.dob.errors %}
-            <p class="text-red-500 text-[10px] font-bold px-1 uppercase tracking-tight">
-                {{ error }}
-            </p>
-        {% endfor %}
-    {% endif %}
-</div>
+                            <!-- Gender -->
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-black text-neutral-500 uppercase tracking-widest px-1">
+                                    Gender
+                                </label>
+                                <div class="relative">
+                                    <select
+                                        name="gender"
+                                        class="w-full bg-black border {% if form.gender.errors %}border-red-600{% else %}border-neutral-800{% endif %} rounded-xl px-4 py-4 text-sm text-white appearance-none">
+                                        <option value="male" {% if user.gender == "male" %}selected{% endif %}>Male</option>
+                                        <option value="female" {% if user.gender == "female" %}selected{% endif %}>Female</option>
+                                        <option value="other" {% if user.gender == "other" %}selected{% endif %}>Other</option>
+                                    </select>
+                                    <i data-lucide="chevron-down"
+                                       class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500"></i>
+                                </div>
+                            </div>
 
+                            <!-- DOB -->
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-black text-neutral-500 uppercase tracking-widest px-1">
+                                    Date of Birth
+                                </label>
+                                {{ form.dob }}
+                                {% for error in form.dob.errors %}
+                                    <p class="text-red-500 text-[10px] font-bold px-1 uppercase">
+                                        {{ error }}
+                                    </p>
+                                {% endfor %}
+                            </div>
 
-                    <!-- Phone Number -->
-                    <div class="space-y-2">
-                        <label for="id_phone_number" class="text-[10px] font-black text-neutral-500 uppercase tracking-widest px-1">Phone Number</label>
-                        <input type="tel" name="phone_number" id="id_phone_number" 
-                            value="{{ form.phone_number.value|default:user.phone_number }}" 
-                            class="w-full bg-black border {% if form.phone_number.errors %}border-red-600{% else %}border-neutral-800{% endif %} rounded-xl px-4 py-4 text-sm text-white focus:border-white focus:outline-none transition">
-                        
-                        <!-- Field Error: Phone Number -->
-                        {% if form.phone_number.errors %}
-                            {% for error in form.phone_number.errors %}
-                                <p class="text-red-500 text-[10px] font-bold px-1 uppercase tracking-tight">{{ error }}</p>
-                            {% endfor %}
-                        {% endif %}
-                    </div>
-                </div>
-
-                <div class="flex justify-end pt-4">
-                    <button type="submit" class="bg-white text-black px-10 py-4 rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-neutral-200 transition">
-                        Save Profile
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-         
-            <!-- Email Form Section -->
-            {% comment %} <div id="section-email" class="settings-section hidden">
-                <div class="bg-neutral-950 border border-neutral-900 rounded-3xl p-8">
-                    <h2 class="text-xl font-black uppercase tracking-tighter italic mb-8">Update Email</h2>
-                    
-                    <form action="{% url 'users:request_email_change_sent_otp' %}" method="POST" class="max-w-md space-y-6">
-                        {% csrf_token %}
-                        <div class="space-y-2">
-                            <label class="text-[10px] font-black text-neutral-500 uppercase tracking-widest px-1">New Email Address</label>
-                            <input type="email" name="email" value="{{ user.email }}" 
-                                class="w-full bg-black border border-neutral-800 rounded-xl px-4 py-4 text-sm text-white focus:border-white focus:outline-none transition">
+                            <!-- Phone -->
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-black text-neutral-500 uppercase tracking-widest px-1">
+                                    Phone Number
+                                </label>
+                                <input
+                                    type="tel"
+                                    name="phone_number"
+                                    value="{{ form.phone_number.value|default:user.phone_number }}"
+                                    class="w-full bg-black border {% if form.phone_number.errors %}border-red-600{% else %}border-neutral-800{% endif %} rounded-xl px-4 py-4 text-sm text-white">
+                            </div>
                         </div>
-                        <button type="submit" class="w-full bg-white text-black py-4 rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-neutral-200 transition">
-                            Verify & Update Email
-                        </button>
-                    </form>
-                </div>
-            </div> {% endcomment %}
 
-            <!-- Password Form Section -->
-            <div id="section-password" class="settings-section hidden">
-                <div class="bg-neutral-950 border border-neutral-900 rounded-3xl p-8">
-                    <h2 class="text-xl font-black uppercase tracking-tighter italic mb-8">Security Check</h2>
-                    <form action=" {% url 'users:user_update_password' %} " method="POST" class="max-w-md space-y-6">
-                        {% csrf_token %}
-                        <div class="space-y-2">
-                            <label class="text-[10px] font-black text-neutral-500 uppercase tracking-widest px-1">Current Password</label>
-                            <input type="password" name="old_password" class="w-full bg-black border border-neutral-800 rounded-xl px-4 py-4 text-sm text-white focus:border-white focus:outline-none transition">
+                        <div class="flex justify-end pt-4">
+                            <button
+                                type="submit"
+                                class="bg-white text-black px-10 py-4 rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-neutral-200 transition">
+                                Save Profile
+                            </button>
                         </div>
-                        <div class="space-y-2">
-                            <label class="text-[10px] font-black text-neutral-500 uppercase tracking-widest px-1">New Password1</label>
-                            <input type="password" name="new_password1" class="w-full bg-black border border-neutral-800 rounded-xl px-4 py-4 text-sm text-white focus:border-white focus:outline-none transition">
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-[10px] font-black text-neutral-500 uppercase tracking-widest px-1">New Password2</label>
-                            <input type="password" name="new_password2" class="w-full bg-black border border-neutral-800 rounded-xl px-4 py-4 text-sm text-white focus:border-white focus:outline-none transition">
-                        </div>
-                        <button type="submit" class="w-full bg-white text-black py-4 rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-neutral-200 transition">
-                            Update Password
-                        </button>
                     </form>
                 </div>
             </div>
-
         </div>
-    </div>
 
-    <script>
-        function switchTab(tabId) {
-            document.querySelectorAll('.settings-section').forEach(section => {
-                section.classList.add('hidden');
-            });
-            document.querySelectorAll('.action-button').forEach(btn => {
-                btn.classList.remove('active', 'bg-white', 'text-black');
-                btn.classList.add('bg-neutral-900', 'text-neutral-400');
-            });
+        <!-- ================= PASSWORD SECTION ================= -->
+        <div id="section-password" class="settings-section hidden">
+            <div class="bg-neutral-950 border border-neutral-900 rounded-3xl p-8">
+                <h2 class="text-xl font-black uppercase italic mb-8">
+                    Security Check
+                </h2>
 
-            document.getElementById('section-' + tabId).classList.remove('hidden');
-            const activeBtn = document.getElementById('btn-' + tabId);
-            activeBtn.classList.add('active', 'bg-white', 'text-black');
-            activeBtn.classList.remove('bg-neutral-900', 'text-neutral-400');
-        }
-        
-        // Auto-initialize icons after DOM content loaded
-        document.addEventListener('DOMContentLoaded', () => {
-            lucide.createIcons();
-        });
-    </script>
+                <form action="{% url 'users:user_update_password' %}" method="POST" class="max-w-md space-y-6">
+                    {% csrf_token %}
+                    <input type="password" name="old_password" placeholder="Current Password" class="w-full bg-black border border-neutral-800 rounded-xl px-4 py-4 text-sm text-white">
+                    <input type="password" name="new_password1" placeholder="New Password" class="w-full bg-black border border-neutral-800 rounded-xl px-4 py-4 text-sm text-white">
+                    <input type="password" name="new_password2" placeholder="Confirm Password" class="w-full bg-black border border-neutral-800 rounded-xl px-4 py-4 text-sm text-white">
+
+                    <button class="w-full bg-white text-black py-4 rounded-xl font-black uppercase text-[10px] tracking-widest">
+                        Update Password
+                    </button>
+                </form>
+            </div>
+        </div>
+
+
+
+
+<script>
+function switchTab(tab) {
+    document.querySelectorAll(".settings-section").forEach(s => s.classList.add("hidden"));
+    document.querySelectorAll(".action-button").forEach(b => {
+        b.classList.remove("bg-white", "text-black");
+        b.classList.add("bg-neutral-900", "text-neutral-400");
+    });
+
+    document.getElementById("section-" + tab).classList.remove("hidden");
+    document.getElementById("btn-" + tab).classList.add("bg-white", "text-black");
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    lucide.createIcons();
+});
+</script>
 {% endblock %}
