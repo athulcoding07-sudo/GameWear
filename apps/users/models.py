@@ -17,6 +17,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     # authentication
     email = models.EmailField(unique=True)
 
+    
+
+
     # basic info
     full_name = models.CharField(
         max_length=255,
@@ -81,6 +84,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     # permissions
     is_active = models.BooleanField(default=True)
+    is_blocked = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
 
     # timestamps
@@ -95,6 +99,9 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return str(self.email)
+    
+    def get_full_name(self):
+        return self.full_name
     
     # users/models.py
 class PendingEmail(models.Model):

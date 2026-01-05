@@ -1,0 +1,89 @@
+{% extends 'adminpanel/dashboard.html' %}
+
+{% block title %}User Management | GameWear Admin{% endblock %}
+
+{% block content %}
+            <div class="max-w-7xl mx-auto">
+                
+                <!-- SINGLE VIEW: ADD CUSTOMER FORM -->
+                <div id="addCustomerView" class="fade-in">
+                    <!-- Back Button & Header -->
+                    <div class="mb-8">
+                        <button class="flex items-center text-neutral-400 hover:text-white transition text-sm mb-4 group">
+                            <svg class="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                            Back to Customer List
+                        </button>
+                        <h1 class="text-3xl font-bold">Add New Customer</h1>
+                        <p class="text-neutral-500 mt-1">Create a new member profile and set initial credentials.</p>
+                    </div>
+
+                    <div class="max-w-4xl bg-black border border-neutral-900 rounded-2xl overflow-hidden shadow-2xl">
+                        <form class="p-8">
+                            <div class="flex flex-col lg:flex-row gap-12">
+                                <!-- Profile Picture Upload Column -->
+                                <div class="w-full lg:w-1/3 flex flex-col items-center">
+                                    <label class="block text-xs font-semibold text-neutral-500 uppercase mb-4 w-full">Profile Picture</label>
+                                    <div class="relative group w-full">
+                                        <div class="w-full aspect-square max-w-[200px] mx-auto rounded-2xl bg-neutral-900 border-2 border-dashed border-neutral-800 flex flex-col items-center justify-center text-neutral-500 group-hover:border-neutral-700 hover:bg-neutral-900/50 transition cursor-pointer overflow-hidden">
+                                            <svg class="w-12 h-12 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                            <span class="text-xs font-medium px-4 text-center">Click or Drag to Upload</span>
+                                            <input type="file" class="absolute inset-0 opacity-0 cursor-pointer">
+                                        </div>
+                                        <div class="mt-4 text-center">
+                                            <p class="text-xs text-neutral-600 italic">JPG, PNG or GIF. Max 2MB.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Form Details Column -->
+                                <div class="flex-1 space-y-6">
+                                    <div class="grid grid-cols-2 gap-6">
+                                        <div>
+                                            <label class="block text-xs font-semibold text-neutral-500 uppercase mb-1.5">First Name</label>
+                                            <input type="text" placeholder="e.g. Alex" class="w-full bg-neutral-900 border border-neutral-800 text-white rounded-lg p-3 focus:ring-1 focus:ring-white focus:border-white transition-all outline-none placeholder-neutral-700">
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs font-semibold text-neutral-500 uppercase mb-1.5">Last Name</label>
+                                            <input type="text" placeholder="e.g. Knight" class="w-full bg-neutral-900 border border-neutral-800 text-white rounded-lg p-3 focus:ring-1 focus:ring-white focus:border-white transition-all outline-none placeholder-neutral-700">
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-xs font-semibold text-neutral-500 uppercase mb-1.5">Email Address</label>
+                                        <input type="email" placeholder="alex.knight@example.com" class="w-full bg-neutral-900 border border-neutral-800 text-white rounded-lg p-3 focus:ring-1 focus:ring-white focus:border-white transition-all outline-none placeholder-neutral-700">
+                                    </div>
+
+                                    <div class="grid grid-cols-2 gap-6">
+                                        <div>
+                                            <label class="block text-xs font-semibold text-neutral-500 uppercase mb-1.5">Account Status</label>
+                                            <select class="w-full bg-neutral-900 border border-neutral-800 text-white rounded-lg p-3 focus:ring-1 focus:ring-white focus:border-white transition-all outline-none appearance-none cursor-pointer">
+                                                <option>Active</option>
+                                                <option>Inactive</option>
+                                                <option>Pending Verification</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs font-semibold text-neutral-500 uppercase mb-1.5">Initial Role</label>
+                                            <select class="w-full bg-neutral-900 border border-neutral-800 text-white rounded-lg p-3 focus:ring-1 focus:ring-white focus:border-white transition-all outline-none appearance-none cursor-pointer">
+                                                <option>Customer</option>
+                                                <option>Wholesale Partner</option>
+                                                <option>Affiliate</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="pt-8 flex items-center justify-end space-x-4 border-t border-neutral-900">
+                                        <button type="button" class="px-8 py-3 text-sm font-bold text-neutral-500 hover:text-white transition">Cancel</button>
+                                        <button type="submit" class="bg-white text-black px-10 py-3 rounded-lg text-sm font-bold hover:bg-neutral-200 transition shadow-lg shadow-white/5">
+                                            Add Customer
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+{% endblock %}
+  

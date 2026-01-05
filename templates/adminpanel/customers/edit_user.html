@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit User | GameWear Admin</title>
+
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+
+    <style>
+        html {
+            font-family: 'Inter', sans-serif;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #404040;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #000000;
+        }
+
+        .nav-link.active {
+            background-color: #171717;
+            color: white;
+            border-right: 4px solid white;
+        }
+
+        .form-input {
+            @apply w-full bg-neutral-900 border border-neutral-800 text-white rounded-lg p-3 focus:ring-1 focus:ring-white focus:border-white transition-all outline-none placeholder-neutral-700;
+        }
+    </style>
+</head>
+
+<body class="bg-black text-white min-h-screen flex flex-col">
+
+    <!-- ========== HEADER ========== -->
+    <header class="bg-black text-white shadow-lg border-b border-neutral-900 sticky top-0 z-50">
+        <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+            <div class="text-2xl font-extrabold tracking-tight text-white">
+                <span class="text-neutral-500">Game</span>Wear <span class="text-xs ml-2 bg-neutral-800 px-2 py-1 rounded uppercase tracking-widest text-neutral-400">Admin</span>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="flex flex-col text-right hidden sm:block">
+                    <span class="text-sm font-semibold">Admin User</span>
+                    <span class="text-xs text-neutral-500">Super Admin</span>
+                </div>
+                <div class="w-10 h-10 rounded-full bg-neutral-800 border border-neutral-700 flex items-center justify-center overflow-hidden">
+                    <svg class="w-6 h-6 text-neutral-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex flex-1 overflow-hidden">
+        
+        <!-- ========== SIDEBAR ========== -->
+        <aside class="w-64 bg-black border-r border-neutral-900 hidden lg:flex flex-col sticky top-[73px] h-[calc(100vh-73px)]">
+            <div class="p-6">
+                <p class="text-xs font-semibold text-neutral-600 uppercase tracking-widest mb-4">Main Menu</p>
+                <nav class="space-y-1">
+                    <a href="#" class="nav-link flex items-center px-4 py-3 text-sm font-medium text-neutral-400 transition-all duration-200 hover:bg-neutral-900 hover:text-white rounded-lg group">
+                        <svg class="w-5 h-5 mr-3 text-neutral-500 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001-1V10M9 21V9h6l-1-1v-4a1 1 0 00-1-1h-4a1 1 0 00-1 1v4L9 21z"></path></svg>
+                        Dashboard
+                    </a>
+                    <a href="#" class="nav-link active flex items-center px-4 py-3 text-sm font-medium transition-all duration-200 hover:bg-neutral-900 rounded-lg group">
+                        <svg class="w-5 h-5 mr-3 text-neutral-500 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                        Customers
+                    </a>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- ========== MAIN CONTENT ========== -->
+        <main class="flex-1 overflow-y-auto bg-neutral-950 p-4 sm:p-8">
+            <div class="max-w-5xl mx-auto">
+                
+                <!-- Back Button & Header -->
+                <div class="mb-8">
+                    <button class="flex items-center text-neutral-400 hover:text-white transition text-sm mb-4 group">
+                        <svg class="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                        Back to User Profile
+                    </button>
+                    <h1 class="text-3xl font-bold">Edit Customer Profile</h1>
+                    <p class="text-neutral-500 mt-1">Update account details, wallet balance, and system permissions for Alex Knight.</p>
+                </div>
+
+                <div class="bg-black border border-neutral-900 rounded-2xl overflow-hidden shadow-2xl">
+                    <form class="p-8">
+                        <div class="flex flex-col lg:flex-row gap-12">
+                            
+                            <!-- LEFT: Profile & Status -->
+                            <div class="w-full lg:w-1/3 space-y-8">
+                                <!-- Profile Pic -->
+                                <div>
+                                    <label class="block text-xs font-bold text-neutral-500 uppercase mb-4">Profile Image</label>
+                                    <div class="relative group">
+                                        <div class="w-40 h-40 rounded-2xl bg-neutral-900 border-2 border-neutral-800 flex items-center justify-center overflow-hidden relative">
+                                            <div class="text-4xl font-black text-neutral-700">AK</div>
+                                            <!-- Overlay for hover -->
+                                            <div class="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                                                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                            </div>
+                                            <input type="file" class="absolute inset-0 opacity-0 cursor-pointer">
+                                        </div>
+                                        <p class="text-[10px] text-neutral-600 mt-2 text-center">Click image to change</p>
+                                    </div>
+                                </div>
+
+                                <!-- Wallet Balance Adjustment -->
+                                <div class="bg-neutral-900/40 p-5 rounded-xl border border-neutral-800">
+                                    <label class="block text-xs font-bold text-neutral-500 uppercase mb-3">Wallet Adjustment</label>
+                                    <div class="relative">
+                                        <span class="absolute left-3 top-3 text-neutral-500 font-bold">$</span>
+                                        <input type="number" step="0.01" value="1420.50" class="w-full bg-black border border-neutral-800 text-white rounded-lg p-2.5 pl-8 focus:ring-1 focus:ring-white outline-none">
+                                    </div>
+                                    <p class="text-[10px] text-neutral-500 mt-2 italic">Directly modify the user's available balance.</p>
+                                </div>
+
+                                <!-- Quick Danger Zone -->
+                                <div class="pt-4">
+                                    <button type="button" class="w-full py-2.5 text-xs font-bold text-red-500 border border-red-900/30 rounded-lg hover:bg-red-950/20 transition">
+                                        Reset Password
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- RIGHT: Form Fields -->
+                            <div class="flex-1 space-y-6">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label class="block text-xs font-bold text-neutral-500 uppercase mb-1.5">First Name</label>
+                                        <input type="text" value="Alex" class="w-full bg-neutral-900 border border-neutral-800 text-white rounded-lg p-3 focus:ring-1 focus:ring-white outline-none">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold text-neutral-500 uppercase mb-1.5">Last Name</label>
+                                        <input type="text" value="Knight" class="w-full bg-neutral-900 border border-neutral-800 text-white rounded-lg p-3 focus:ring-1 focus:ring-white outline-none">
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs font-bold text-neutral-500 uppercase mb-1.5">Email Address</label>
+                                    <input type="email" value="alex.knight@example.com" class="w-full bg-neutral-900 border border-neutral-800 text-white rounded-lg p-3 focus:ring-1 focus:ring-white outline-none">
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs font-bold text-neutral-500 uppercase mb-1.5">Phone Number</label>
+                                    <input type="text" value="+1 (555) 012-3456" class="w-full bg-neutral-900 border border-neutral-800 text-white rounded-lg p-3 focus:ring-1 focus:ring-white outline-none">
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 border-t border-neutral-900 pt-6">
+                                    <div>
+                                        <label class="block text-xs font-bold text-neutral-500 uppercase mb-1.5">Account Status</label>
+                                        <select class="w-full bg-neutral-900 border border-neutral-800 text-white rounded-lg p-3 focus:ring-1 focus:ring-white outline-none appearance-none cursor-pointer">
+                                            <option selected>Active</option>
+                                            <option>Inactive</option>
+                                            <option>Banned</option>
+                                            <option>Pending Verification</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold text-neutral-500 uppercase mb-1.5">User Role</label>
+                                        <select class="w-full bg-neutral-900 border border-neutral-800 text-white rounded-lg p-3 focus:ring-1 focus:ring-white outline-none appearance-none cursor-pointer">
+                                            <option selected>Customer</option>
+                                            <option>Wholesale Partner</option>
+                                            <option>Staff Member</option>
+                                            <option>Moderator</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="pt-8 flex items-center justify-end space-x-4 border-t border-neutral-900">
+                                    <button type="button" class="px-8 py-3 text-sm font-bold text-neutral-500 hover:text-white transition">Discard Changes</button>
+                                    <button type="submit" class="bg-white text-black px-10 py-3 rounded-lg text-sm font-bold hover:bg-neutral-200 transition shadow-lg shadow-white/5">
+                                        Save Profile
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- ========== FOOTER ========== -->
+    <footer class="bg-black border-t border-neutral-900 py-6">
+        <div class="max-w-full mx-auto px-8 flex flex-col md:flex-row justify-between items-center text-xs">
+            <p class="text-neutral-500">&copy; 2025 GameWear Admin Terminal.</p>
+            <div class="flex space-x-6 mt-4 md:mt-0 text-neutral-500">
+                <a href="#" class="hover:text-white transition">System Status</a>
+                <a href="#" class="hover:text-white transition">Security</a>
+                <a href="#" class="hover:text-white transition">Help Desk</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

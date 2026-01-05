@@ -2,7 +2,7 @@ from django.shortcuts import render,redirect
 from django.contrib import messages
 from django.db import IntegrityError
 from .forms import UserSignupForm,UserEditProfileForm,EmailChangeForm,AddressForm
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login,logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
@@ -11,6 +11,8 @@ from django.shortcuts import get_object_or_404
 from apps.otp.services import send_otp,verify_otp,resend_otp
 from django.contrib.auth import update_session_auth_hash
 from .models import PendingEmail,Address
+from django.views.decorators.cache import never_cache
+from django.views.decorators.http import require_POST
 
 
 
@@ -114,30 +116,35 @@ def resend_signup_otp(request):
 
 
 def login_view(request):
-    """  
-    Handles user login.
-
-    Display the login page
-    check it is post request,authenticate,admin or user
-    if admin go to admin dashboard and user go to user dashboard
-
+    """
+    Handles user login:
+    - Authenticate user
+    - Check blocked status
+    - Redirect admin or user accordingly
     """
     if request.method == "POST":
         email = request.POST.get("email")
         password = request.POST.get("password")
-        # authenticate user
         user = authenticate(request, email=email, password=password)
-        if user is not None:
-            login(request, user)
-            messages.success(request, "Login successful")
-            # ADMIN
-            if user.is_staff or user.role == "admin":
-                return redirect("adminpanel:dashboard")
-            # NORMAL USER
-            return redirect("users:dashboard")
-        else:
-            messages.error(request, "Invalid email or password")
+        if user is None:
+            messages.error(request, "Invalid credentials or account blocked")
+            return redirect("users:login")
+        if user.is_blocked:
+            messages.error(request, "Your account has been blocked!")
+            return redirect("users:login")
+        login(request, user)
+        messages.success(request, "Login successful")
+        if user.is_staff or user.role == "admin":
+            return redirect("adminpanel:dashboard")
+        return redirect("users:dashboard")
     return render(request, "users/login.html")
+
+
+@never_cache
+@require_POST
+def logout_view(request):
+    logout(request)
+    return redirect("home:landing")
 
 
 
@@ -285,26 +292,18 @@ def user_update_password_view(request):
         new_password1 = request.POST.get("new_password1")
         new_password2 = request.POST.get("new_password2")
 
-        # 1️⃣ Validate fields
         if not old_password or not new_password1 or not new_password2:
             messages.error(request, "All fields are required.")
             return redirect("users:user_profile_edit")
-
-        # 2️⃣ Check old password
         if not request.user.check_password(old_password):
             messages.error(request, "Current password is incorrect.")
             return redirect("users:user_profile_edit")
-
-        # 3️⃣ Check new password match
         if new_password1 != new_password2:
             messages.error(request, "New passwords do not match.")
             return redirect("users:user_profile_edit")
-
-        # 4️⃣ Set new password
         request.user.set_password(new_password1)
         request.user.save()
 
-        # 5️⃣ Keep user logged in
         update_session_auth_hash(request, request.user)
 
         messages.success(request, "Password updated successfully.")
@@ -317,16 +316,14 @@ def user_update_password_view(request):
 @login_required
 def request_email_change_sent_otp(request):
     if request.method == "POST":
-        form = EmailChangeForm(request.POST, user=request.user)  # ✅ FIX
+        form = EmailChangeForm(request.POST, user=request.user) 
 
         if form.is_valid():
             new_email = form.cleaned_data["new_email"]
-
             PendingEmail.objects.update_or_create(
                 user=request.user,
                 defaults={"new_email": new_email}
             )
-
             send_otp(
                 user=request.user,
                 purpose="email_change",
@@ -336,9 +333,6 @@ def request_email_change_sent_otp(request):
             request.session["email_change"] = True
             messages.success(request, "OTP sent to new email.")
             return redirect("users:verify_email_change_otp")
-
-        
-
     else:
         form = EmailChangeForm(user=request.user)  # ✅ also pass user on GET
 
@@ -355,15 +349,12 @@ def verify_email_change_otp(request):
 
     if request.method == "POST":
         otp = request.POST.get("otp")
-
-        # Reuse existing verification logic
         if verify_otp(
             user=request.user,
             purpose="email_change",
             code=otp
         ):
             pending = PendingEmail.objects.get(user=request.user)
-
             # Update real email ONLY now
             request.user.email = pending.new_email
             request.user.save(update_fields=["email"])
@@ -390,25 +381,21 @@ def resend_email_change_otp(request):
     if not request.session.get("email_change"):
         messages.error(request, "Session expired. Please try again.")
         return redirect("users:user_profile_edit")
-
     try:
         pending = PendingEmail.objects.get(user=request.user)
     except PendingEmail.DoesNotExist:
         messages.error(request, "No pending email change found.")
         return redirect("users:user_profile_edit")
-
     # Reuse your existing resend_otp logic
     success, message = resend_otp(
         user=request.user,
         purpose="email_change",
         email=pending.new_email   # IMPORTANT
     )
-
     messages.info(request, message)
     return redirect("users:verify_email_change_otp")
 
 
-# Updated logic for your views.py
 @login_required
 def address_view(request):
     # Fetch all addresses belonging to the logged-in user
@@ -420,7 +407,6 @@ def address_view(request):
 
 @login_required
 def add_address(request):
-    
     if request.method == "POST":
         
         form = AddressForm(request.POST)
@@ -445,7 +431,6 @@ def add_address(request):
 def edit_address(request, address_id=None):
     # Check for the ID in the URL or the POST data to avoid TypeError
     target_id = address_id or request.POST.get('address_id')
-    
     if not target_id:
         messages.error(request, "Address ID is missing.")
         return redirect("users:address_view")
@@ -477,11 +462,9 @@ def delete_address(request, address_id=None):
     # The error occurred because address_id was missing in the URL path.
     # We allow address_id to be None and check POST data as a fallback.
     target_id = address_id or request.POST.get('address_id')
-    
     if not target_id:
         messages.error(request, "Address ID is missing.")
         return redirect("users:address_view")
-
     # Ensure user can only delete their own address
     address = get_object_or_404(Address, id=target_id, user=request.user)
     

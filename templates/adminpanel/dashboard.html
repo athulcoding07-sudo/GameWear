@@ -1,10 +1,11 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard | GameWear</title>
+    <title>{% block title %}Admin Dashboard | GameWear{% endblock %}</title>
 
     <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -36,17 +37,103 @@
             color: white;
             border-right: 4px solid white;
         }
+
+        /* Toast Animations */
+        @keyframes toast-in {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes toast-out {
+            from { transform: translateY(0); opacity: 1; }
+            to { transform: translateY(-20px); opacity: 0; }
+        }
+        @keyframes shrink {
+            from { width: 100%; }
+            to { width: 0%; }
+        }
+        .toast-animate-in { animation: toast-in 0.3s ease-out forwards; }
+        .toast-animate-out { animation: toast-out 0.3s ease-in forwards; }
+        
+        .progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Mobile Sidebar Transition */
+        #mobile-sidebar {
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        {% block extra_css %}{% endblock %}
     </style>
 </head>
 
 <body class="bg-black text-white min-h-screen flex flex-col">
 
+    <!-- ========== MESSAGES BLOCK (Toasts) ========== -->
+    {% if messages %}
+    <div id="toast-container" class="fixed top-24 left-1/2 -translate-x-1/2 z-[100] flex flex-col items-center gap-3 w-full max-w-md px-4 pointer-events-none">
+        {% for message in messages %}
+        <div class="toast-message toast-animate-in pointer-events-auto relative overflow-hidden group flex items-start gap-4 p-4 rounded-xl border backdrop-blur-md shadow-2xl transition-all duration-300 w-full
+            {% if message.tags == 'success' %}
+                bg-emerald-950/90 border-emerald-500/50 text-emerald-100
+            {% elif message.tags == 'error' %}
+                bg-rose-950/90 border-rose-500/50 text-rose-100
+            {% elif message.tags == 'warning' %}
+                bg-amber-950/90 border-amber-500/50 text-amber-100
+            {% else %}
+                bg-neutral-900/95 border-neutral-700 text-neutral-100
+            {% endif %}"
+             role="alert">
+            
+            <!-- Icon -->
+            <div class="flex-shrink-0 mt-0.5">
+                {% if message.tags == 'success' %}
+                <svg class="w-5 h-5 text-emerald-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                {% elif message.tags == 'error' %}
+                <svg class="w-5 h-5 text-rose-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path></svg>
+                {% else %}
+                <svg class="w-5 h-5 text-neutral-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>
+                {% endif %}
+            </div>
+
+            <!-- Content -->
+            <div class="flex-1 pr-4">
+                <p class="text-sm font-medium leading-tight">{{ message }}</p>
+            </div>
+
+            <!-- Close Button -->
+            <button onclick="removeToast(this.closest('.toast-message'))" class="flex-shrink-0 text-white/40 hover:text-white transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+
+            <!-- Progress Bar -->
+            <div class="progress-bar" style="animation: shrink 4s linear forwards;"></div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- ========== MOBILE SIDEBAR OVERLAY ========== -->
+    <div id="mobile-overlay" class="fixed inset-0 bg-black/80 z-[60] hidden lg:hidden transition-opacity duration-300 opacity-0"></div>
+
     <!-- ========== HEADER BLOCK ========== -->
-    <header class="bg-black text-white shadow-lg border-b border-neutral-900 sticky top-0 z-50">
+    <header id="admin-header" class="bg-black text-white shadow-lg border-b border-neutral-900 sticky top-0 z-50">
         <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-            <!-- Logo -->
-            <div class="text-2xl font-extrabold tracking-tight text-white">
-                <span class="text-neutral-500">Game</span>Wear <span class="text-xs ml-2 bg-neutral-800 px-2 py-1 rounded uppercase tracking-widest text-neutral-400">Admin</span>
+            
+            <div class="flex items-center gap-4">
+                <!-- Mobile Menu Toggle Button -->
+                <button id="mobile-toggle" class="lg:hidden p-1 text-neutral-400 hover:text-white">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
+                </button>
+
+                <!-- Logo -->
+                <div class="text-xl sm:text-2xl font-extrabold tracking-tight text-white">
+                    <span class="text-neutral-500">Game</span>Wear <span class="text-[10px] sm:text-xs ml-1 sm:ml-2 bg-neutral-800 px-2 py-1 rounded uppercase tracking-widest text-neutral-400">Admin</span>
+                </div>
             </div>
 
             <!-- Navigation Links -->
@@ -58,7 +145,7 @@
             <!-- Actions -->
             <div class="flex items-center space-x-4">
                 <div class="flex flex-col text-right hidden sm:block">
-                    <span class="text-sm font-semibold">Admin User</span>
+                    <span class="text-sm font-semibold">{{ user.username|default:"Admin User" }}</span>
                     <span class="text-xs text-neutral-500">Super Admin</span>
                 </div>
                 <button class="w-10 h-10 rounded-full bg-neutral-800 border border-neutral-700 flex items-center justify-center overflow-hidden">
@@ -69,11 +156,19 @@
     </header>
 
     <!-- ========== DASHBOARD LAYOUT ========== -->
-    <div class="flex flex-1 overflow-hidden">
+    <div class="flex flex-1 overflow-hidden relative">
         
-        <!-- Sidebar Navigation -->
-        <aside class="w-64 bg-black border-r border-neutral-900 hidden lg:flex flex-col sticky top-[73px] h-[calc(100vh-73px)]">
+        <!-- Sidebar Navigation (Responsive: Desktop fixed, Mobile overlay) -->
+        <aside id="mobile-sidebar" class="fixed inset-y-0 left-0 w-64 bg-black border-r border-neutral-900 z-[70] flex flex-col transform -translate-x-full transition-transform duration-300 lg:translate-x-0 lg:static lg:h-[calc(100vh-73px)] lg:z-auto">
             <div class="p-6">
+                <!-- Mobile Only: Close Button -->
+                <div class="flex lg:hidden justify-between items-center mb-6">
+                    <span class="text-neutral-500 font-bold">MENU</span>
+                    <button id="mobile-close" class="text-neutral-400">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
+                </div>
+
                 <p class="text-xs font-semibold text-neutral-600 uppercase tracking-widest mb-4">Main Menu</p>
                 <nav class="space-y-1">
                     <a href="#" class="nav-link active flex items-center px-4 py-3 text-sm font-medium transition-all duration-200 hover:bg-neutral-900 rounded-lg group">
@@ -88,7 +183,7 @@
                         <svg class="w-5 h-5 mr-3 text-neutral-500 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
                         Orders
                     </a>
-                    <a href="#" class="nav-link flex items-center px-4 py-3 text-sm font-medium text-neutral-400 transition-all duration-200 hover:bg-neutral-900 hover:text-white rounded-lg group">
+                    <a href="{% url 'adminpanel:customers_list' %}" class="nav-link flex items-center px-4 py-3 text-sm font-medium text-neutral-400 transition-all duration-200 hover:bg-neutral-900 hover:text-white rounded-lg group">
                         <svg class="w-5 h-5 mr-3 text-neutral-500 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
                         Customers
                     </a>
@@ -124,32 +219,33 @@
             </div>
             
             <div class="mt-auto p-6 border-t border-neutral-900">
-                <button class="flex items-center text-sm font-medium text-red-500 hover:text-red-400 transition-colors">
+                <a href="{% url 'adminpanel:logout_view' %}" class="flex items-center text-sm font-medium text-red-500 hover:text-red-400 transition-colors">
                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
                     Logout
-                </button>
+                </a>
             </div>
         </aside>
 
         <!-- Main Content Area -->
-        <main class="flex-1 overflow-y-auto bg-neutral-950 p-4 sm:p-8">
+        <main class="flex-1 overflow-y-auto bg-neutral-950 p-6 sm:px-8 sm:py-6">
+            {% block content %}
             <div class="max-w-6xl mx-auto">
                 
                 <!-- Welcome Section -->
-                <div class="flex justify-between items-end mb-8">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-8 gap-4">
                     <div>
-                        <h1 class="text-3xl font-bold">Admin Dashboard</h1>
-                        <p class="text-neutral-500 mt-1">Welcome back. Here's what's happening with your store today.</p>
+                        <h1 class="text-2xl sm:text-3xl font-bold">Admin Dashboard</h1>
+                        <p class="text-neutral-500 mt-1 text-sm sm:text-base">Welcome back. Here's what's happening with your store today.</p>
                     </div>
-                    <div class="hidden sm:block">
-                        <button class="bg-white text-black text-sm font-bold py-2 px-4 rounded-lg hover:bg-neutral-200 transition">
+                    <div class="w-full sm:w-auto">
+                        <button class="w-full sm:w-auto bg-white text-black text-sm font-bold py-2 px-4 rounded-lg hover:bg-neutral-200 transition">
                             Download Report
                         </button>
                     </div>
                 </div>
 
-                <!-- Stats Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <!-- Stats Grid (Responsive: 1 col on mobile, 2 on tablet, 4 on desktop) -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                     <div class="bg-black border border-neutral-900 p-6 rounded-2xl">
                         <p class="text-neutral-500 text-sm font-medium">Total Revenue</p>
                         <h3 class="text-2xl font-bold mt-2">$24,560.00</h3>
@@ -194,7 +290,7 @@
                             <a href="#" class="text-xs text-neutral-400 hover:text-white underline">View all</a>
                         </div>
                         <div class="overflow-x-auto">
-                            <table class="w-full text-left">
+                            <table class="w-full text-left min-w-[500px]">
                                 <thead class="text-xs text-neutral-500 bg-neutral-950 uppercase">
                                     <tr>
                                         <th class="px-6 py-3 font-medium">Order</th>
@@ -242,7 +338,7 @@
                             <a href="#" class="text-xs text-neutral-400 hover:text-white underline">View all</a>
                         </div>
                         <div class="overflow-x-auto">
-                            <table class="w-full text-left">
+                            <table class="w-full text-left min-w-[500px]">
                                 <thead class="text-xs text-neutral-500 bg-neutral-950 uppercase">
                                     <tr>
                                         <th class="px-6 py-3 font-medium">User</th>
@@ -273,17 +369,6 @@
                                         <td class="px-6 py-4 text-xs text-neutral-400">1 hour ago</td>
                                         <td class="px-6 py-4 text-right font-semibold">2</td>
                                     </tr>
-                                    <tr class="hover:bg-neutral-900 transition-colors">
-                                        <td class="px-6 py-4 flex items-center">
-                                            <div class="w-8 h-8 rounded-full bg-neutral-800 flex items-center justify-center mr-3 text-xs font-bold text-neutral-400">MT</div>
-                                            <div>
-                                                <div class="font-semibold">Mark Thompson</div>
-                                                <div class="text-[10px] text-neutral-500">m.thompson@gmail.com</div>
-                                            </div>
-                                        </td>
-                                        <td class="px-6 py-4 text-xs text-neutral-400">3 hours ago</td>
-                                        <td class="px-6 py-4 text-right font-semibold">1</td>
-                                    </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -299,7 +384,7 @@
                         </h2>
                         <span class="text-xs text-neutral-500">Last 30 Days</span>
                     </div>
-                    <div class="p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         <div class="flex items-center p-4 bg-neutral-950 border border-neutral-900 rounded-xl hover:border-neutral-700 transition-colors cursor-pointer">
                             <div class="w-12 h-12 bg-neutral-900 rounded-lg flex-shrink-0 border border-neutral-800"></div>
                             <div class="ml-4 flex-1">
@@ -328,22 +413,70 @@
                 </div>
 
             </div>
+            {% endblock %}
         </main>
     </div>
 
     <!-- ========== FOOTER BLOCK ========== -->
     <footer class="bg-black border-t border-neutral-900 py-6 z-50">
-        <div class="max-w-full mx-auto px-8 flex flex-col md:flex-row justify-between items-center text-xs">
+        <div class="max-w-full mx-auto px-8 flex flex-col md:flex-row justify-between items-center text-xs text-center md:text-left">
             <p class="text-neutral-500">
                 &copy; 2025 GameWear Admin Terminal. All rights reserved.
             </p>
-            <div class="flex space-x-6 mt-4 md:mt-0">
+            <div class="flex space-x-6 mt-4 md:mt-0 flex-wrap justify-center">
                 <a href="#" class="text-neutral-500 hover:text-white transition duration-200">System Status</a>
                 <a href="#" class="text-neutral-500 hover:text-white transition duration-200">Security</a>
                 <a href="#" class="text-neutral-500 hover:text-white transition duration-200">Help Desk</a>
             </div>
         </div>
     </footer>
+
+    <!-- JS for Mobile Toggle and removing toasts -->
+    <script>
+        // Responsive Menu Selectors
+        const sidebar = document.getElementById('mobile-sidebar');
+        const overlay = document.getElementById('mobile-overlay');
+        const btnToggle = document.getElementById('mobile-toggle');
+        const btnClose = document.getElementById('mobile-close');
+
+        function toggleMenu() {
+            const isOpen = sidebar.classList.contains('translate-x-0');
+            if (isOpen) {
+                sidebar.classList.remove('translate-x-0');
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+                overlay.classList.remove('opacity-100');
+            } else {
+                sidebar.classList.remove('-translate-x-full');
+                sidebar.classList.add('translate-x-0');
+                overlay.classList.remove('hidden');
+                setTimeout(() => overlay.classList.add('opacity-100'), 10);
+            }
+        }
+
+        btnToggle.addEventListener('click', toggleMenu);
+        if(btnClose) btnClose.addEventListener('click', toggleMenu);
+        overlay.addEventListener('click', toggleMenu);
+
+        function removeToast(el) {
+            if (!el) return;
+            el.classList.add('toast-animate-out');
+            setTimeout(() => {
+                el.remove();
+            }, 300);
+        }
+
+        // Auto-dismiss logic for toasts
+        document.addEventListener('DOMContentLoaded', () => {
+            const toasts = document.querySelectorAll('.toast-message');
+            toasts.forEach(toast => {
+                setTimeout(() => {
+                    removeToast(toast);
+                }, 4000);
+            });
+        });
+    </script>
+    {% block extra_js %}{% endblock %}
 
 </body>
 
