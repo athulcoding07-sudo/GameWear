@@ -5,3 +5,7 @@ __pycache__/
 .env
 staticfiles/
 media/
+
+
+# Django settings (local)
+config/settings.py
