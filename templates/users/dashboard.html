@@ -1,107 +1,200 @@
 {% extends "users/user_dashboard_base.html" %}
+{% load static %}
 
-{% block title %}GameWear - Collections {% endblock %}
+{% block title %}GameWear - Jersey Store{% endblock %}
 
 {% block content %}
 
+<!-- HERO SECTION - Adjusted to flow from base header -->
+<div class="relative -mt-10 mb-20 w-full h-[75vh] overflow-hidden rounded-3xl bg-neutral-900 border border-neutral-800">
+    <!-- Background Image with Overlay -->
+    <div class="absolute inset-0">
+        <img src="https://images.unsplash.com/photo-1577471488278-16eec37ffcc2?q=80&w=2574&auto=format&fit=crop" 
+             alt="Jersey Background" 
+             class="w-full h-full object-cover opacity-60">
+        <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+    </div>
 
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <div class="mb-10">
-            <h1 class="text-5xl font-black uppercase tracking-tighter italic text-white leading-none">Collections</h1>
-            <div class="flex items-center gap-2 mt-2 text-neutral-500 text-xs font-bold uppercase tracking-widest">
-                <a href="#" class="hover:text-white transition">Home</a>
-                <span>/</span>
-                <span class="text-neutral-300">All Products</span>
+    <!-- Hero Content -->
+    <div class="relative h-full px-8 md:px-12 flex flex-col justify-center items-start">
+        <span class="text-neutral-400 font-bold tracking-[0.3em] uppercase mb-4 animate-pulse text-xs">Official Jersey Store</span>
+        <h1 class="text-5xl md:text-8xl font-black italic uppercase text-white tracking-tighter leading-none mb-6 drop-shadow-xl">
+            Wear Your <br>
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-white to-neutral-500">Colors.</span>
+        </h1>
+        <p class="text-neutral-300 text-base md:text-lg max-w-lg mb-10 font-light leading-relaxed">
+            Premium embroidery, retro classics, and player-grade fits. Elevate your game day with our exclusive jersey collection.
+        </p>
+        <div class="flex flex-wrap gap-4">
+            <a href="#" class="bg-white text-black font-black uppercase tracking-widest text-xs px-10 py-4 rounded-full hover:bg-neutral-200 transition-all transform hover:-translate-y-1 shadow-[0_0_20px_rgba(255,255,255,0.3)]">
+                Shop Jerseys
+            </a>
+            <a href="#new-arrivals" class="border border-white/20 backdrop-blur-md text-white font-bold uppercase tracking-widest text-xs px-10 py-4 rounded-full hover:bg-white hover:text-black transition-all">
+                New Drops
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- FEATURES STRIP - Integrated into the page flow -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-24">
+    <div class="p-8 rounded-2xl bg-neutral-900/50 border border-neutral-800 text-center">
+        <p class="text-white font-black uppercase italic tracking-wider text-lg">Pro Quality</p>
+        <p class="text-neutral-500 text-sm mt-1">Authentic fabrics & stitching</p>
+    </div>
+    <div class="p-8 rounded-2xl bg-neutral-900/50 border border-neutral-800 text-center">
+        <p class="text-white font-black uppercase italic tracking-wider text-lg">Fast Shipping</p>
+        <p class="text-neutral-500 text-sm mt-1">Get your jersey before match day</p>
+    </div>
+    <div class="p-8 rounded-2xl bg-neutral-900/50 border border-neutral-800 text-center">
+        <p class="text-white font-black uppercase italic tracking-wider text-lg">Custom Fit</p>
+        <p class="text-neutral-500 text-sm mt-1">Size guides for every build</p>
+    </div>
+</div>
+
+<!-- SHOP BY CATEGORY -->
+<section class="mb-24">
+    <div class="flex justify-between items-end mb-12">
+        <div>
+            <h2 class="text-3xl md:text-4xl font-black uppercase italic text-white tracking-tighter">Shop By Style</h2>
+            <div class="w-16 h-1 bg-white mt-4"></div>
+        </div>
+        <a href="#" class="hidden md:block text-neutral-500 hover:text-white font-bold uppercase tracking-widest text-[10px] transition">View All &rarr;</a>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Category 1: Embroidery -->
+        <a href="{% url "users:products_listing" %}" class="group relative h-80 rounded-2xl overflow-hidden border border-neutral-800">
+            <img src="https://campeonsports.com/cdn/shop/files/rn-image_picker_lib_temp_f68d3d26-37a6-46ba-9cfd-25bd348d66dd.png?v=1767517229&width=720" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition duration-700 opacity-60 group-hover:opacity-80">
+            <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+            <div class="absolute bottom-6 left-6">
+                <h3 class="text-xl font-black uppercase italic text-white tracking-tight">Embroidery</h3>
+                <p class="text-neutral-400 text-[10px] uppercase tracking-widest mt-1 opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-2 group-hover:translate-y-0">Detailed Stitching</p>
+            </div>
+        </a>
+
+        <!-- Category 2: Half Sleeve -->
+        <a href="{% url "users:products_details" %}" class="group relative h-80 rounded-2xl overflow-hidden border border-neutral-800">
+            <img src="https://campeonsports.com/cdn/shop/files/70E8D3F1-9A31-42BD-B3A3-E21D9BED6192.jpg?v=1765538672&width=330" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition duration-700 opacity-60 group-hover:opacity-80">
+            <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+            <div class="absolute bottom-6 left-6">
+                <h3 class="text-xl font-black uppercase italic text-white tracking-tight">Five Sleeve</h3>
+                <p class="text-neutral-400 text-[10px] uppercase tracking-widest mt-1 opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-2 group-hover:translate-y-0">Standard Fit</p>
+            </div>
+        </a>
+
+        <!-- Category 3: Full Sleeve -->
+        <a href="#" class="group relative h-80 rounded-2xl overflow-hidden border border-neutral-800">
+            <img src="https://campeonsports.com/cdn/shop/files/rn-image_picker_lib_temp_2c6e4329-a160-472d-a937-4e3738758884.jpg?v=1765464715&width=720" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition duration-700 opacity-60 group-hover:opacity-80">
+            <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+            <div class="absolute bottom-6 left-6">
+                <h3 class="text-xl font-black uppercase italic text-white tracking-tight">Full Sleeve</h3>
+                <p class="text-neutral-400 text-[10px] uppercase tracking-widest mt-1 opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-2 group-hover:translate-y-0">Winter Ready</p>
+            </div>
+        </a>
+
+        <!-- Category 4: Retro -->
+        <a href="#" class="group relative h-80 rounded-2xl overflow-hidden border border-neutral-800">
+            <img src="https://campeonsports.com/cdn/shop/files/FE387C54-5B1D-41FF-9F0D-DA4FEA9ECD2F.jpg?v=1752079092&width=720" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition duration-700 opacity-60 group-hover:opacity-80 grayscale group-hover:grayscale-0">
+            <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+            <div class="absolute bottom-6 left-6">
+                <h3 class="text-xl font-black uppercase italic text-white tracking-tight">Retro</h3>
+                <p class="text-neutral-400 text-[10px] uppercase tracking-widest mt-1 opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-2 group-hover:translate-y-0">Classic Kits</p>
+            </div>
+        </a>
+    </div>
+</section>
+
+<!-- FEATURED PRODUCTS GRID -->
+<section class="mb-24">
+    <div class="text-center mb-16">
+        <h2 class="text-4xl md:text-5xl font-black uppercase italic text-white tracking-tighter mb-4">Trending Jerseys</h2>
+        <p class="text-neutral-500 max-w-xl mx-auto text-sm">The most sought-after jerseys of the season. Grab yours before the final whistle.</p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        {% for product in featured_products %}
+        <div class="group">
+            <div class="relative aspect-[4/5] bg-neutral-900 rounded-2xl overflow-hidden border border-neutral-800 p-6">
+                {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-full object-contain group-hover:scale-110 transition duration-700">
+                {% else %}
+                    <img src="https://campeonsports.com/cdn/shop/files/33AE88D9-C2F3-4676-B489-E566B284B2DB.jpg?v=1767157312&width=720" class="w-full h-full object-contain group-hover:scale-110 transition duration-700">
+                {% endif %}
+                
+                <div class="absolute bottom-0 left-0 right-0 p-6 translate-y-full group-hover:translate-y-0 transition duration-300 bg-gradient-to-t from-black/90 to-transparent">
+                    <a href="#" class="block w-full bg-white text-black text-center font-black uppercase text-[10px] py-3 rounded-full hover:bg-neutral-200 tracking-widest">
+                        View Jersey
+                    </a>
+                </div>
+                
+                <button class="absolute top-4 right-4 text-neutral-600 hover:text-white transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                </button>
+            </div>
+            
+            <div class="mt-5 px-2">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-[9px] font-bold uppercase text-neutral-500 tracking-widest mb-1">{{ product.category.name|default:"Jersey" }}</p>
+                        <h3 class="text-base font-bold text-white group-hover:text-neutral-400 transition">{{ product.name }}</h3>
+                    </div>
+                    <p class="text-base font-black italic text-white">${{ product.price }}</p>
+                </div>
             </div>
         </div>
-
-        <form>
-            <div class="flex flex-col md:flex-row gap-4 justify-between items-center mb-12 bg-neutral-900/40 p-4 rounded-xl border border-neutral-800">
-                <div class="relative w-full md:w-96">
-                    <input type="text" placeholder="Search products..." class="w-full bg-black border border-neutral-800 rounded-lg py-3 pl-12 pr-4 text-sm text-white focus:outline-none focus:border-neutral-500">
-                    <svg class="w-5 h-5 absolute left-4 top-3 text-neutral-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                </div>
-                <div class="flex items-center gap-3 w-full md:w-auto">
-                    <select class="bg-black border border-neutral-800 rounded-lg py-3 px-6 text-sm text-white focus:outline-none cursor-pointer w-full sm:w-48">
-                        <option>Default Sorting</option>
-                        <option>Price: Low to High</option>
-                        <option>Price: High to Low</option>
-                    </select>
-                </div>
+        {% empty %}
+            <div class="col-span-full text-center py-20 bg-neutral-900/30 rounded-3xl border border-dashed border-neutral-800">
+                <p class="text-neutral-600 uppercase tracking-widest font-bold text-xs">No featured jerseys available</p>
             </div>
-
-            <div class="flex flex-col lg:flex-row gap-12">
-                <aside class="w-full lg:w-64 flex-shrink-0">
-                    <div class="space-y-10">
-                        <!-- Categories -->
-                        <div>
-                            <h3 class="text-xs font-black uppercase tracking-[0.2em] text-white mb-6 flex items-center gap-2"><span class="w-2 h-2 bg-neutral-500"></span> Categories</h3>
-                            <div class="space-y-3">
-                                <label class="flex items-center justify-between cursor-pointer group"><span class="text-sm text-neutral-400 group-hover:text-white transition">Basketball</span><input type="checkbox" class="w-4 h-4 rounded-sm bg-black border-neutral-800"></label>
-                                <label class="flex items-center justify-between cursor-pointer group"><span class="text-sm text-neutral-400 group-hover:text-white transition">Running</span><input type="checkbox" class="w-4 h-4 rounded-sm bg-black border-neutral-800" checked></label>
-                                <label class="flex items-center justify-between cursor-pointer group"><span class="text-sm text-neutral-400 group-hover:text-white transition">Lifestyle</span><input type="checkbox" class="w-4 h-4 rounded-sm bg-black border-neutral-800"></label>
-                            </div>
-                        </div>
-
-                        <!-- Color Filter -->
-                        <div>
-                            <h3 class="text-xs font-black uppercase tracking-[0.2em] text-white mb-6 flex items-center gap-2"><span class="w-2 h-2 bg-neutral-500"></span> Colors</h3>
-                            <div class="flex flex-wrap gap-3">
-                                <label class="cursor-pointer">
-                                    <input type="checkbox" class="sr-only peer">
-                                    <div class="w-8 h-8 rounded-full bg-white border border-neutral-800 peer-checked:ring-2 peer-checked:ring-neutral-500 peer-checked:ring-offset-2 peer-checked:ring-offset-black transition-all"></div>
-                                </label>
-                                <label class="cursor-pointer">
-                                    <input type="checkbox" class="sr-only peer" checked>
-                                    <div class="w-8 h-8 rounded-full bg-black border border-neutral-300 peer-checked:ring-2 peer-checked:ring-neutral-500 peer-checked:ring-offset-2 peer-checked:ring-offset-black transition-all"></div>
-                                </label>
-                                <label class="cursor-pointer">
-                                    <input type="checkbox" class="sr-only peer">
-                                    <div class="w-8 h-8 rounded-full bg-red-600 border border-neutral-800 peer-checked:ring-2 peer-checked:ring-neutral-500 peer-checked:ring-offset-2 peer-checked:ring-offset-black transition-all"></div>
-                                </label>
-                                <label class="cursor-pointer">
-                                    <input type="checkbox" class="sr-only peer">
-                                    <div class="w-8 h-8 rounded-full bg-blue-600 border border-neutral-800 peer-checked:ring-2 peer-checked:ring-neutral-500 peer-checked:ring-offset-2 peer-checked:ring-offset-black transition-all"></div>
-                                </label>
-                                <label class="cursor-pointer">
-                                    <input type="checkbox" class="sr-only peer">
-                                    <div class="w-8 h-8 rounded-full bg-yellow-500 border border-neutral-800 peer-checked:ring-2 peer-checked:ring-neutral-500 peer-checked:ring-offset-2 peer-checked:ring-offset-black transition-all"></div>
-                                </label>
-                            </div>
-                        </div>
-
-                        <!-- Max Price -->
-                        <div>
-                            <h3 class="text-xs font-black uppercase tracking-[0.2em] text-white mb-6 flex items-center gap-2"><span class="w-2 h-2 bg-neutral-500"></span> Max Price</h3>
-                            <input type="range" min="0" max="1000" value="500" class="w-full h-1 bg-neutral-800 rounded-lg appearance-none cursor-pointer">
-                            <div class="text-center mt-3 text-lg font-black italic text-white tracking-tighter">$500</div>
-                        </div>
-
-                        <button type="button" class="w-full bg-white text-black font-black uppercase text-xs py-4 rounded-lg hover:bg-neutral-200 transition tracking-widest">Apply Filters</button>
-                    </div>
-                </aside>
-
-                <section class="flex-grow">
-                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-6 gap-y-12">
-                        <!-- Product Card -->
-                        <div class="group cursor-pointer">
-                            <div class="relative aspect-square bg-neutral-900 rounded-2xl overflow-hidden border border-neutral-800 group-hover:border-neutral-600 transition-all duration-500 p-8">
-                                <img src="https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-contain group-hover:scale-110 transition duration-700">
-                                <div class="absolute top-4 left-4 bg-white text-black text-[10px] font-black px-3 py-1 rounded-full uppercase">New</div>
-                            </div>
-                            <div class="mt-6 flex justify-between items-start">
-                                <div><p class="text-[10px] font-bold uppercase text-neutral-500 tracking-widest">Nike / Running</p><h3 class="text-lg font-bold text-white">Air Zoom Pegasus</h3></div>
-                                <p class="text-xl font-black italic text-white">$120.00</p>
-                            </div>
-                        </div>
-                        <!-- More products... -->
-                    </div>
-                </section>
-            </div>
-        </form>
+        {% endfor %}
     </div>
-</body>
-</html>
+</section>
 
+<!-- NEW ARRIVALS SECTION -->
+<section id="new-arrivals" class="relative py-20 px-8 md:px-12 bg-neutral-900 rounded-3xl border border-neutral-800 overflow-hidden mb-24">
+    <div class="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 bg-white rounded-full blur-[120px] opacity-5"></div>
+    
+    <div class="relative flex flex-col lg:flex-row items-center gap-12">
+        <div class="w-full lg:w-1/3">
+            <span class="inline-block bg-white text-black text-[10px] font-black uppercase px-3 py-1 rounded-full mb-4">New Arrivals</span>
+            <h2 class="text-4xl md:text-6xl font-black uppercase italic text-white tracking-tighter leading-none mb-6">
+                The 2026 <br>Retro Series
+            </h2>
+            <p class="text-neutral-500 text-sm mb-8">
+                Classic designs reimagined for the modern fan. Breathable fabric, vintage cuts, and timeless style.
+            </p>
+            <a href="#" class="inline-block bg-neutral-800 text-white font-black uppercase tracking-widest text-[10px] px-8 py-3 rounded-full hover:bg-white hover:text-black transition">Shop Retro</a>
+        </div>
+        
+        <div class="w-full lg:w-2/3">
+            <div class="flex gap-6 overflow-x-auto pb-4 snap-x no-scrollbar">
+                {% for item in new_arrivals %}
+                <div class="snap-center shrink-0 w-56 group">
+                    <div class="relative aspect-[3/4] bg-black rounded-2xl overflow-hidden border border-neutral-800 mb-4">
+                        {% if item.image %}
+                            <img src="{{ item.image.url }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                        {% else %}
+                            <img src="https://campeonsports.com/cdn/shop/files/33AE88D9-C2F3-4676-B489-E566B284B2DB.jpg?v=1767157312&width=720" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                        {% endif %}
+                        <div class="absolute top-3 left-3 bg-white text-black text-[9px] font-bold px-2 py-0.5 rounded-full uppercase">New</div>
+                    </div>
+                    <h4 class="text-white font-bold text-sm truncate px-1">{{ item.name }}</h4>
+                    <p class="text-neutral-500 text-xs font-black italic px-1">${{ item.price }}</p>
+                </div>
+                {% empty %}
+                     <div class="snap-center shrink-0 w-56 group">
+                        <div class="relative aspect-[3/4] bg-black rounded-2xl overflow-hidden border border-neutral-800 mb-4">
+                            <img src="https://campeonsports.com/cdn/shop/files/33AE88D9-C2F3-4676-B489-E566B284B2DB.jpg?v=1767157312&width=720" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                            <div class="absolute top-3 left-3 bg-white text-black text-[9px] font-bold px-2 py-0.5 rounded-full uppercase">New</div>
+                        </div>
+                        <h4 class="text-white font-bold text-sm px-1">Classic 90s Kit</h4>
+                        <p class="text-neutral-500 text-xs font-black italic px-1">$89.99</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
 
 {% endblock %}

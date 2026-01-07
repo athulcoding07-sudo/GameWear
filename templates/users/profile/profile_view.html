@@ -9,10 +9,11 @@
         <div class="relative">
             <div class="w-32 h-32 rounded-3xl bg-neutral-800 flex items-center justify-center overflow-hidden border-2 border-neutral-700">
                 <img
-                    src="{% if user.profile_image %}{{ user.profile_image.url }}{% else %}https://api.dicebear.com/7.x/avataaars/svg?seed={{ user.get_full_name|default:user.username }}{% endif %}"
-                    alt="Avatar"
-                    class="w-full h-full object-cover"
-                >
+    src="{% if user.profile_image %}{{ user.profile_image.url }}{% else %}https://api.dicebear.com/7.x/initials/png?seed={{ user.email|default:user.username }}{% endif %}"
+    alt="Avatar"
+    class="w-full h-full object-cover"
+/>
+
             </div>
         </div>
 

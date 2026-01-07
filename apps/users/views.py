@@ -474,3 +474,8 @@ def delete_address(request, address_id=None):
     
     return redirect("users:address_view")
 
+def products_listing(request):
+    return render(request,"users/products/products_listing_page.html")
+
+def products_details(request):
+    return render(request,'users/products/products_details_page.html')

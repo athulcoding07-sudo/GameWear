@@ -1,0 +1,194 @@
+{% extends "users/user_dashboard_base.html" %}
+{% load static %}
+
+{% block title %}{{ product.name }} | GameWear{% endblock %}
+
+{% block content %}
+
+<div class="min-h-screen bg-black text-white py-12">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Breadcrumbs -->
+    <nav class="flex mb-8 text-[10px] font-bold uppercase tracking-widest text-neutral-500">
+        <a href="/" class="hover:text-white transition">Home</a>
+        <span class="mx-2">/</span>
+        <a href="{% url 'users:products_listing' %}" class="hover:text-white transition">Shop</a>
+        <span class="mx-2">/</span>
+        <span class="text-white">{{ product.name }}</span>
+    </nav>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 xl:gap-24">
+        
+        <!-- LEFT COLUMN: IMAGE GALLERY -->
+        <div class="space-y-6">
+            <div class="relative aspect-[4/5] bg-neutral-900 border border-neutral-800 rounded-[2rem] overflow-hidden group">
+                {% if product.image %}
+                    <img id="main-image" src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-full object-contain p-12 transition-transform duration-700 hover:scale-110">
+                {% else %}
+                    <div class="w-full h-full flex items-center justify-center text-neutral-800">
+                        <svg class="w-24 h-24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2v-5H4v5a2 2 0 002 2z"/></svg>
+                    </div>
+                {% endif %}
+                
+                {% if product.old_price %}
+                <div class="absolute top-8 left-8 bg-white text-black text-[10px] font-black uppercase px-4 py-1.5 rounded-full italic tracking-tighter">
+                    Limited Edition Sale
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Thumbnail Grid (Optional implementation) -->
+            {% if product.images.all %}
+            <div class="grid grid-cols-4 gap-4">
+                {% for img in product.images.all %}
+                <button onclick="document.getElementById('main-image').src='{{ img.image.url }}'" 
+                        class="aspect-square bg-neutral-900 border border-neutral-800 rounded-2xl overflow-hidden p-2 hover:border-white transition">
+                    <img src="{{ img.image.url }}" class="w-full h-full object-contain">
+                </button>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- RIGHT COLUMN: PRODUCT INFO -->
+        <div class="flex flex-col justify-center">
+            <div class="mb-8">
+                <p class="text-xs font-black uppercase text-neutral-500 tracking-[0.3em] mb-4">{{ product.category.name }}</p>
+                <h1 class="text-5xl md:text-6xl font-black uppercase italic tracking-tighter leading-none mb-6">
+                    {{ product.name }}
+                </h1>
+                
+                <div class="flex items-center gap-6">
+                    <span class="text-4xl font-black italic">${{ product.price }}</span>
+                    {% if product.old_price %}
+                    <span class="text-xl text-neutral-600 line-through font-bold">${{ product.old_price }}</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Description -->
+            <div class="prose prose-invert prose-sm mb-10 text-neutral-400 leading-relaxed max-w-none">
+                <p>{{ product.description|linebreaksbr }}</p>
+            </div>
+
+            <!-- Add to Cart Form -->
+            <form action="#" method="POST" class="space-y-8">
+                {% comment %} {% url 'cart:add_to_cart' product.id %} {% endcomment %}
+                {% csrf_token %}
+                
+                <!-- Size Selection -->
+                <div>
+                    <div class="flex justify-between items-center mb-4">
+                        <label class="text-[10px] font-black uppercase tracking-widest text-neutral-500">Select Size</label>
+                        <button type="button" class="text-[10px] font-bold text-neutral-400 underline underline-offset-4 hover:text-white transition uppercase">Size Guide</button>
+                    </div>
+                    <div class="grid grid-cols-4 gap-3">
+                        {% for size in product.sizes.all %}
+                        <label class="relative cursor-pointer group">
+                            <input type="radio" name="size" value="{{ size.id }}" class="hidden peer" required 
+                                   {% if size.stock <= 0 %}disabled{% endif %}>
+                            <div class="w-full py-4 border border-neutral-800 rounded-xl text-center text-sm font-bold uppercase transition
+                                        peer-checked:bg-white peer-checked:text-black peer-checked:border-white
+                                        peer-disabled:opacity-20 peer-disabled:cursor-not-allowed
+                                        {% if size.stock > 0 %}hover:border-neutral-500{% endif %}">
+                                {{ size.name }}
+                            </div>
+                            {% if size.stock <= 0 %}
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <div class="w-full h-[1px] bg-neutral-600 -rotate-45"></div>
+                            </div>
+                            {% endif %}
+                        </label>
+                        {% empty %}
+                        <p class="text-xs text-neutral-500 uppercase tracking-widest italic">Standard Size (One Size Available)</p>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Quantity & Action Buttons -->
+                <div class="flex flex-col sm:flex-row gap-4 pt-4">
+                    <div class="flex border border-neutral-800 rounded-full overflow-hidden h-14 bg-neutral-900/30">
+                        <button type="button" onclick="this.nextElementSibling.stepDown()" class="px-6 hover:text-white text-neutral-500 transition font-bold">—</button>
+                        <input type="number" name="quantity" value="1" min="1" max="10" class="w-12 bg-transparent text-center border-none focus:ring-0 font-black text-lg">
+                        <button type="button" onclick="this.previousElementSibling.stepUp()" class="px-6 hover:text-white text-neutral-500 transition font-bold">+</button>
+                    </div>
+                    
+                    <button type="submit" class="flex-1 bg-white text-black font-black uppercase tracking-[0.2em] text-xs h-14 rounded-full hover:bg-neutral-200 transition shadow-[0_0_40px_rgba(255,255,255,0.1)]">
+                        Add to Equipment Bag
+                    </button>
+                    
+                    <button type="button" class="w-14 h-14 border border-neutral-800 rounded-full flex items-center justify-center hover:border-white group transition">
+                        <svg class="w-5 h-5 text-neutral-500 group-hover:text-white transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                    </button>
+                </div>
+            </form>
+
+            <!-- Product Specifications / Features -->
+            <div class="mt-16 border-t border-neutral-800 pt-8 space-y-6">
+                <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 rounded-full bg-neutral-900 flex items-center justify-center text-neutral-400">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-black uppercase text-white tracking-widest">AeroReady Technology</p>
+                        <p class="text-[10px] text-neutral-500 uppercase font-medium">Sweat-wicking fabric for peak performance.</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 rounded-full bg-neutral-900 flex items-center justify-center text-neutral-400">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-black uppercase text-white tracking-widest">Premium Materials</p>
+                        <p class="text-[10px] text-neutral-500 uppercase font-medium">100% Recycled polyester mesh panels.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RELATED PRODUCTS SECTION -->
+    {% if related_products %}
+    <div class="mt-32 pt-12 border-t border-neutral-800">
+        <h2 class="text-3xl font-black uppercase italic tracking-tighter mb-12">Recommended Gear</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {% for related in related_products %}
+            <div class="group relative">
+                <div class="relative aspect-[4/5] bg-neutral-900 border border-neutral-800 rounded-3xl overflow-hidden p-6 transition-all duration-500 group-hover:border-neutral-600">
+                    <a href="{{ related.get_absolute_url }}" class="block w-full h-full">
+                        {% if related.image %}
+                            <img src="{{ related.image.url }}" alt="{{ related.name }}" class="w-full h-full object-contain transition-transform duration-700 group-hover:scale-110">
+                        {% endif %}
+                    </a>
+                    <div class="absolute inset-x-0 bottom-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                        <a href="{{ related.get_absolute_url }}" class="w-full block bg-white text-black text-center py-2.5 rounded-full text-[9px] font-black uppercase tracking-widest hover:bg-neutral-200 transition">
+                            Quick View
+                        </a>
+                    </div>
+                </div>
+                <div class="mt-4 px-2">
+                    <h3 class="text-xs font-bold text-white group-hover:text-neutral-400 transition mb-1">{{ related.name }}</h3>
+                    <p class="text-[10px] font-black italic text-neutral-400 tracking-wider">${{ related.price }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+</div>
+
+<style>
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+-webkit-appearance: none;
+margin: 0;
+}
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+</style>
+
+{% endblock %}

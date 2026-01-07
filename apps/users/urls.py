@@ -23,6 +23,8 @@ from .views import (
     edit_address,
     delete_address,
     logout_view,
+    products_listing,
+    products_details
 
     
 )
@@ -52,6 +54,10 @@ urlpatterns = [
     path("edit-address/",edit_address,name = "edit_address"),
     path("delete-address/",delete_address,name = "delete_address"),
     path("logout/", logout_view, name="logout"),
+    path("products-listing/", products_listing, name="products_listing"),
+    path("products-details/", products_details, name="products_details"),
+
+
     
 
 

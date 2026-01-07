@@ -1,0 +1,199 @@
+{% extends "users/user_dashboard_base.html" %}
+{% load static %}
+
+{% block title %}Shop All Jerseys | GameWear{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-black text-white py-8">
+    <!-- 1. CENTERED SEARCH SECTION -->
+    <div class="max-w-2xl mx-auto mb-12 text-center">
+        <h1 class="text-4xl md:text-5xl font-black uppercase italic tracking-tighter mb-6">The Collection</h1>
+        
+        <form method="GET" action="{% url 'users:products_listing' %}" class="relative group">
+            <!-- Preserve existing filters when searching -->
+            {% for key, value in request.GET.items %}
+                {% if key != 'q' and key != 'page' %}
+                    <input type="hidden" name="{{ key }}" value="{{ value }}">
+                {% endif %}
+            {% endfor %}
+            
+            <input type="text" name="q" value="{{ request.GET.q|default:'' }}" 
+                   placeholder="Search by team, player, or league..." 
+                   class="w-full bg-neutral-900/50 border border-neutral-800 rounded-2xl py-4 px-6 text-lg text-white focus:border-white focus:ring-0 transition backdrop-blur-sm">
+            
+            <div class="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                {% if request.GET.q %}
+                <a href="?{% for key, value in request.GET.items %}{% if key != 'q' and key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}" 
+                   class="text-neutral-500 hover:text-white transition p-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </a>
+                {% endif %}
+                <button type="submit" class="bg-white text-black p-2 rounded-xl hover:bg-neutral-200 transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div class="flex flex-col lg:flex-row gap-8">
+        
+        <!-- 2. LEFT SIDEBAR: FILTERS -->
+        <aside class="w-full lg:w-72 flex-shrink-0">
+            <div class="sticky top-24 bg-neutral-900/40 border border-neutral-800 rounded-3xl p-6 backdrop-blur-md">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xs font-black uppercase tracking-[0.2em] text-white italic">Filters</h2>
+                    <a href="{% url 'users:products_listing' %}" class="text-[9px] font-bold text-neutral-500 hover:text-white transition uppercase">Clear All</a>
+                </div>
+
+                <form method="GET" action="{% url 'users:products_listing' %}" id="filter-form" class="space-y-8">
+                    <!-- Keep search and sort state -->
+                    <input type="hidden" name="q" value="{{ request.GET.q|default:'' }}">
+                    <input type="hidden" name="sort" value="{{ request.GET.sort|default:'-created_at' }}">
+
+                    <!-- Category Filter -->
+                    <div>
+                        <label class="block text-[10px] font-black uppercase tracking-widest text-neutral-500 mb-4">Category</label>
+                        <div class="space-y-3">
+                            {% for category in categories %}
+                            <label class="flex items-center cursor-pointer group">
+                                <input type="checkbox" name="category" value="{{ category.slug }}" 
+                                       class="hidden peer" 
+                                       {% if category.slug in selected_categories %}checked{% endif %}
+                                       onchange="this.form.submit()">
+                                <div class="w-5 h-5 border border-neutral-800 rounded-md bg-black peer-checked:bg-white peer-checked:border-white transition flex items-center justify-center mr-3">
+                                    <svg class="w-3 h-3 text-black opacity-0 peer-checked:opacity-100" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                                </div>
+                                <span class="text-sm font-medium text-neutral-400 group-hover:text-white transition">{{ category.name }}</span>
+                            </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Price Range -->
+                    <div>
+                        <label class="block text-[10px] font-black uppercase tracking-widest text-neutral-500 mb-4">Price Range</label>
+                        <div class="grid grid-cols-2 gap-2 mb-3">
+                            <input type="number" name="min_price" value="{{ request.GET.min_price }}" placeholder="Min" 
+                                   class="bg-black border border-neutral-800 rounded-lg py-2 px-3 text-xs text-white focus:border-white outline-none">
+                            <input type="number" name="max_price" value="{{ request.GET.max_price }}" placeholder="Max" 
+                                   class="bg-black border border-neutral-800 rounded-lg py-2 px-3 text-xs text-white focus:border-white outline-none">
+                        </div>
+                        <button type="submit" class="w-full py-2 bg-neutral-800 hover:bg-white hover:text-black text-white text-[10px] font-black uppercase tracking-widest rounded-lg transition">
+                            Apply Filters
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </aside>
+
+        <!-- 3. MAIN CONTENT AREA -->
+        <div class="flex-1">
+            
+            <!-- Toolbar with RIGHT ALIGNED SORTING -->
+            <div class="flex flex-col md:flex-row justify-between items-center bg-neutral-900/20 border border-neutral-800 rounded-2xl p-4 mb-8 gap-4">
+                <div class="text-[10px] font-bold uppercase tracking-widest text-neutral-500">
+                    Showing <span class="text-white">{{ page_obj.start_index }}-{{ page_obj.end_index }}</span> of <span class="text-white">{{ paginator.count }}</span> Results
+                </div>
+                
+                <!-- Sorting Options Right Aligned -->
+                <div class="flex items-center gap-4">
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-neutral-600">Sort By:</span>
+                    <select onchange="const form = document.getElementById('filter-form'); form.sort.value = this.value; form.submit();" 
+                            class="bg-black border border-neutral-800 text-[10px] font-bold uppercase text-white py-2 px-6 rounded-full focus:border-white outline-none cursor-pointer">
+                        <option value="-created_at" {% if request.GET.sort == '-created_at' %}selected{% endif %}>New Arrivals</option>
+                        <option value="price" {% if request.GET.sort == 'price' %}selected{% endif %}>Price: Low to High</option>
+                        <option value="-price" {% if request.GET.sort == '-price' %}selected{% endif %}>Price: High to Low</option>
+                        <option value="name" {% if request.GET.sort == 'name' %}selected{% endif %}>Name: A - Z</option>
+                        <option value="-name" {% if request.GET.sort == '-name' %}selected{% endif %}>Name: Z - A</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Product Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+                {% for product in products %}
+                <div class="group relative">
+                    <div class="relative aspect-[4/5] bg-neutral-900 border border-neutral-800 rounded-3xl overflow-hidden p-6 transition-all duration-500 group-hover:border-neutral-600">
+                        {% if product.old_price %}
+                        <div class="absolute top-4 left-4 z-10 bg-white text-black text-[9px] font-black uppercase px-2 py-1 rounded-md italic">Sale</div>
+                        {% endif %}
+
+                        <a href="{{ product.get_absolute_url }}" class="block w-full h-full">
+                            {% if product.image %}
+                                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-full object-contain transition-transform duration-700 group-hover:scale-110">
+                            {% else %}
+                                <div class="w-full h-full flex items-center justify-center text-neutral-800">
+                                    <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2v-5H4v5a2 2 0 002 2z"/></svg>
+                                </div>
+                            {% endif %}
+                        </a>
+
+                        <div class="absolute inset-x-0 bottom-0 p-6 translate-y-full group-hover:translate-y-0 transition-transform duration-300 bg-gradient-to-t from-black to-transparent">
+                            <a href="{{ product.get_absolute_url }}" class="w-full block bg-white text-black text-center py-3 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-neutral-200 transition">
+                                View Product
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="mt-5 px-2">
+                        <div class="flex justify-between items-start mb-1">
+                            <p class="text-[9px] font-black uppercase text-neutral-500 tracking-widest">{{ product.category.name }}</p>
+                            <div class="flex gap-2">
+                                {% if product.old_price %}
+                                <span class="text-xs text-neutral-600 line-through font-bold">${{ product.old_price }}</span>
+                                {% endif %}
+                                <span class="text-sm text-white font-black italic">${{ product.price }}</span>
+                            </div>
+                        </div>
+                        <h3 class="text-sm font-bold text-white group-hover:text-neutral-400 transition line-clamp-1">{{ product.name }}</h3>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-span-full py-32 flex flex-col items-center justify-center text-center bg-neutral-900/10 border border-dashed border-neutral-800 rounded-3xl">
+                    <svg class="w-16 h-16 text-neutral-800 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    <h3 class="text-xl font-bold text-white mb-2">No Jerseys Found</h3>
+                    <p class="text-neutral-500 text-sm max-w-xs uppercase tracking-widest font-medium">Try resetting your filters or adjusting your search query.</p>
+                    <a href="{% url 'users:products_listing' %}" class="mt-6 text-xs font-black text-white underline underline-offset-8 uppercase tracking-widest hover:text-neutral-400 transition">Reset All Filters</a>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            {% if is_paginated %}
+            <div class="mt-20 flex justify-center">
+                <nav class="flex items-center gap-2">
+                    {% if page_obj.has_previous %}
+                    <a href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_obj.previous_page_number }}" 
+                       class="w-12 h-12 flex items-center justify-center rounded-full border border-neutral-800 text-neutral-400 hover:border-white hover:text-white transition">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                    </a>
+                    {% endif %}
+
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <span class="w-12 h-12 flex items-center justify-center rounded-full bg-white text-black font-black text-sm">{{ num }}</span>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <a href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ num }}" 
+                               class="w-12 h-12 flex items-center justify-center rounded-full border border-neutral-800 text-neutral-400 hover:text-white transition font-bold text-sm">
+                                {{ num }}
+                            </a>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                    <a href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_obj.next_page_number }}" 
+                       class="w-12 h-12 flex items-center justify-center rounded-full border border-neutral-800 text-neutral-400 hover:border-white hover:text-white transition">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    </a>
+                    {% endif %}
+                </nav>
+            </div>
+            {% endif %}
+
+        </div>
+    </div>
+</div>
+
+
+</div>
+{% endblock %}
